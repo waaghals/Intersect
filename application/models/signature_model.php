@@ -59,13 +59,13 @@ class Signature_model extends CI_Model {
 			$scores = array();
 			
 		    foreach ($query->result() as $row) {
-	       		$uncompressed_cvec = puzzle_uncompress_cvec($row->compressed_signature);
+				$uncompressed_cvec = puzzle_uncompress_cvec($row->compressed_signature);
 				$distance = puzzle_vector_normalized_distance($cvec, $uncompressed_cvec);
 				
-	       		if ($distance < $threshold && $distance > 0.0) {
-			    	$scores[$picture_id] = $distance;
+				if ($distance < $threshold && $distance > 0.0) {
+					$scores[$picture_id] = $distance;
 				}
-	    	}
+			}
 		}
 	    return $scores;
 	}
