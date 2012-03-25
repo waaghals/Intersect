@@ -17,7 +17,7 @@ class Images_model extends CI_Model {
 			SELECT 
 				i.id, 
 				CONCAT( replace( CONVERT( datetime, date ) , '-', '/' ) , '/', digest, '.', extension ) AS path, 
-				d.width * d.height /150000 + i.rating AS rating
+				d.width * d.height / 150000 + i.rating AS rating
 			FROM image AS i
 				JOIN image_data AS d 
 					ON ( i.id = d.image_id ) 
@@ -31,7 +31,7 @@ class Images_model extends CI_Model {
 		return FALSE;
 	}
 	
-	function random() {
+	public function random() {
 		
 		$sql = "SELECT MAX(`id`) AS max_id , MIN(`id`) AS min_id FROM image";
 		$q = $this->db->query($sql, array($md5, $extension, date("Y-m-d H:i:s")));
@@ -45,5 +45,21 @@ class Images_model extends CI_Model {
 		$this->id = $row->id;
 		$this->path = $path;
 		return array('path' => $path, 'id' => $row->id);
+	}
+
+	public function get_rating($id) {
+		$sql = "
+			SELECT d.width * d.height / 150000 + i.rating AS rating 
+			FROM image AS i
+				JOIN image_data AS d 
+					ON ( i.id = d.image_id ) 
+			WHERE i.id = ?";
+		$q = $this->db->query($sql, $id);
+		
+		if ($query->num_rows() == 1) {
+			$row = $q->row();
+			return $row->rating;
+		}
+		return FALSE;
 	}
 }

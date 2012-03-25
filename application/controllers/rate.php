@@ -11,37 +11,17 @@ class Rate extends CI_Controller {
 
 		if ($this->form_validation->run() == FALSE)
 		{
-			$this->load->view('myform');
-			
+			show_error('You messed up!');
 		}
 		else
 		{
-			//$this->load->view('formsuccess');
+			$winner = $this->input->post('winner');
+			$loser = $this->input->post('loser');
 			
-			//Winner Rating
-			$sql = "
-				SELECT d.width * d.height / 150000 + i.rating AS rating 
-				FROM image AS i
-					JOIN image_data AS d 
-						ON ( i.id = d.image_id ) 
-				WHERE i.id = ? 
-				LIMIT 0,1";
-			$r = $this->db->query($sql, array($this->input->post('winner')));
-			$row = $r->row();
-			$winner_rating = $row->rating;
-			
-			//Loser Rating
-			$sql = "
-				SELECT d.width * d.height / 150000 + i.rating AS rating 
-				FROM image AS i
-					JOIN image_data AS d 
-						ON ( i.id = d.image_id ) 
-				WHERE i.id = ? 
-				LIMIT 0,1";
-			$r = $this->db->query($sql, array($this->input->post('loser')));
-			$row = $r->row();
-			$loser_rating = $row->rating;
-			
+			$this->load->model('Images_model', 'images');
+			$winner_rating = $this->images->get_rating($winner);
+			$loser_rating = $this->images->get_rating($loser);
+
 			if( ! $winner_rating || ! $loser_rating)
 			{
 				//Id's are unvalid
@@ -54,12 +34,8 @@ class Rate extends CI_Controller {
 			$this->rate->calc_new_ratings();
 			
 			//Update the new ratings
-			$q = $dbh->prepare('UPDATE image SET rating = ? WHERE id = ?');
-			$q->execute(array($this->rate->get_winner_rating(), $this->input->post('winner')));
-		
-			$q = $dbh->prepare('UPDATE image SET rating = ? WHERE id = ?');
-			$q->execute(array($this->rate->get_loser_rating(), $this->input->post('loser')));
-			
+			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
+			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
 		}
 	}
 }
