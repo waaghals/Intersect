@@ -19,7 +19,11 @@ class Image extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		$this->load->model('Images_model', 'image');
+		$data['left'] = $this->image->random();
+		$data['right'] = $this->image->random();
+		
+		$this->load->view('versus', $data);
 	}
 }
 
