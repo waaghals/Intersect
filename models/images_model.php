@@ -46,8 +46,7 @@ class Images_model extends CI_Model {
 					extension, 
 					replace(CONVERT(datetime,date), \'-\', \'/\') AS datetime 
 				FROM image 
-				WHERE id >= ? 
-				LIMIT 0,1";
+				WHERE id >= ?";
 		$q = $this->db->query($sql, array(mt_rand($row->min_id, $row->max_id)));
 		$row = $q->row();
 		
@@ -69,5 +68,20 @@ class Images_model extends CI_Model {
 			return $row->rating;
 		}
 		return FALSE;
+	}
+	
+	public function get_image($id) {
+		$sql = "SELECT 
+					id, 
+					digest, 
+					extension, 
+					replace(CONVERT(datetime,date), \'-\', \'/\') AS datetime 
+				FROM image 
+				WHERE id = ?";
+		$q = $this->db->query($sql, $id);
+		$row = $q->row();
+		
+		$path = $row->datetime . '/' . $row->digest . '.' . $row->extension;
+		return array('path' => $path, 'id' => $row->id);
 	}
 }
