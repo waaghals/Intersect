@@ -43,3 +43,25 @@ JOIN image_tag_map b
 GROUP BY a.tag_id,
 		b.tag_id
 ORDER BY weight DESC
+
+
+## 99% percentile, get the top 1% of images.
+SELECT 
+g2.id AS id,
+SUM( g1.r ) / ( 
+SELECT COUNT( * ) 
+FROM image ) AS percentile, CONCAT( replace( CONVERT( g2.datetime, date ) , '-', '/' ) , '/', g2.digest, '.', g2.extension ) AS path
+FROM (
+
+SELECT COUNT( * ) r, rating
+FROM image
+GROUP BY rating
+)g1
+JOIN (
+
+SELECT COUNT( * ) r, rating, datetime, digest, extension, id
+FROM image
+GROUP BY rating
+)g2 ON g1.rating < g2.rating
+GROUP BY g2.rating
+HAVING percentile >= 0.99
