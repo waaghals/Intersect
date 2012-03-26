@@ -27,12 +27,19 @@ GROUP BY a.tag_id, b.tag_id
 ## http://www.artfulsoftware.com/infotree/queries.php#1149  Pairwise matchmaking
 ## This query will insert the tag relation ships in the computation engine periodically
 
-INSERT tag_graph (oridgid,destid, weight) SELECT a.tag_id AS origid,
-       b.tag_id AS destid,
-       COUNT(DISTINCT a.image_id) /
-  ( SELECT COUNT(DISTINCT id)
-   FROM image AS i
-   JOIN image_tag_map AS tm ON i.id = tm.image_id ) AS weight
+INSERT INTO tag_graph (origid,destid, weight)
+SELECT	a.tag_id AS origid,
+		b.tag_id AS destid,
+		COUNT(DISTINCT a.image_id) /
+	(SELECT COUNT(DISTINCT id)
+	FROM image AS i
+	JOIN image_tag_map AS tm 
+		ON i.id = tm.image_id) 
+		AS weight
 FROM image_tag_map a
-JOIN image_tag_map b ON a.tag_id != b.tag_id
-AND a.image_id = b.image_id
+JOIN image_tag_map b 
+	ON a.tag_id != b.tag_id
+		AND a.image_id = b.image_id
+GROUP BY a.tag_id,
+		b.tag_id
+ORDER BY weight DESC
