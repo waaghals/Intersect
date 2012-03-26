@@ -24,11 +24,25 @@ class Images_model extends CI_Model {
 			ORDER BY score ?
 			LIMIT 0 , ?";
 			
+		$q = $this->db->query($sql);	
 		if ($q->num_rows() > 0)
 		{
 			return $q->result();
 		}
 		return FALSE;
+	}
+	
+	
+	public function percentile() {
+		
+		//This is a heavy query. The query results are cached with cron with the cron_model. Execution times are over 10 seconds with 20k images.
+		$this->load->driver('cache');
+
+		if ( ! $percentile_result = $this->cache->get('percentile_result')) {
+			show_error('Could not get query result from cache.');
+			return FALSE;
+ 		}
+		return $percentile_result;
 	}
 	
 	public function random() {

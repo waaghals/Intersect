@@ -11,6 +11,7 @@ class Cron extends CI_Controller {
 	
 	public function hourly() {
 		$this->cron->update_tag_map();
+		$this->cron->update_percentile();
 	}
 }
 
