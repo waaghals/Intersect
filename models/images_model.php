@@ -39,8 +39,18 @@ class Images_model extends CI_Model {
 		$this->load->driver('cache');
 
 		if ( ! $percentile_result = $this->cache->get('percentile_result')) {
-			show_error('Could not get query result from cache.');
-			return FALSE;
+			
+			
+			//Try to get the results, hope the user waits long enough.
+			$ci =& get_instance();
+			$ci->load->model('cron_model', 'cron');
+			$ci->cron->percentile();
+			
+			//Don't do this recursively, if the percentile query fails there will be a infinite loop
+			if ( ! $percentile_result = $this->cache->get('percentile_result')) {
+				show_error('Could not get query result from cache.');
+				return FALSE;
+			}
  		}
 		return $percentile_result;
 	}
