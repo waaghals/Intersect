@@ -36,6 +36,9 @@ class Rate extends CI_Controller {
 			//Update the new ratings
 			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
 			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
+			
+			$this->load->helper('url');
+			redirect('/');
 		}
 	}
 }

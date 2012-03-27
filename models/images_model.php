@@ -23,7 +23,7 @@ class Images_model extends CI_Model {
 					ON ( i.id = d.image_id ) 
 			ORDER BY score ?
 			LIMIT 0 , ?";
-			
+		
 		$q = $this->db->query($sql);	
 		if ($q->num_rows() > 0)
 		{
@@ -61,20 +61,20 @@ class Images_model extends CI_Model {
 					MAX(`id`) AS max_id , 
 					MIN(`id`) AS min_id 
 				FROM image";
-		$q = $this->db->query($sql, array($md5, $extension, date("Y-m-d H:i:s")));
+		$q = $this->db->query($sql);
 		$row = $q->row();
 		
 		$sql = "SELECT 
 					id, 
 					digest, 
 					extension, 
-					replace(CONVERT(datetime,date), \'-\', \'/\') AS datetime 
+					replace(CONVERT(datetime,date), '-', '/') AS datetime 
 				FROM image 
 				WHERE id >= ?";
 		$q = $this->db->query($sql, array(mt_rand($row->min_id, $row->max_id)));
 		$row = $q->row();
-		
-		$path = $row->datetime . '/' . $row->digest . '.' . $row->extension;
+
+		$path = $this->config->item('img_dir') . '/' . $row->datetime . '/' . $row->digest . '.' . $row->extension;
 		return array('path' => $path, 'id' => $row->id);
 	}
 
@@ -87,7 +87,7 @@ class Images_model extends CI_Model {
 			WHERE i.id = ?";
 		$q = $this->db->query($sql, $id);
 		
-		if ($query->num_rows() == 1) {
+		if ($q->num_rows() == 1) {
 			$row = $q->row();
 			return $row->rating;
 		}

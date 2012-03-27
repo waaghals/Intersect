@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2011 onwards, Priyesh Patel
  * @license Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
  */
-class Rating_model extends CI_Model {
+class Rate_model extends CI_Model {
 
     /**
      * @var int The K Factor used.
@@ -74,14 +74,14 @@ class Rating_model extends CI_Model {
      * calculate the new ratings for the winner and the loser.
      *
      */
-	public function calc_new_scores() {
+	public function calc_new_ratings() {
 		$expected_scores = $this->get_expected_scores($this->ratingA, $this->ratingB);
         $this->expectedA = $expected_scores['a'];
         $this->expectedB = $expected_scores['b'];
 		
 		$new_ratings = $this->get_new_ratings($this->ratingA, $this->ratingB, $this->expectedA, $this->expectedB, $this->scoreA, $this->scoreB);
-        $this->newRatingA = $newRatings['a'];
-        $this->newRatingB = $newRatings['b'];
+        $this->newRatingA = $new_ratings['a'];
+        $this->newRatingB = $new_ratings['b'];
 	}
 	
     protected function get_expected_scores($ratingA,$ratingB)

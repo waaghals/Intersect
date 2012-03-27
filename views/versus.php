@@ -1,5 +1,5 @@
 <?php
-$this->load->help('form');
+$this->load->helper('form');
 
 //Left image
 echo form_open('rate');
@@ -14,7 +14,7 @@ $data = array(
 			'alt'	=> 'Left wins!'
              );
 echo form_input($data);
-echo from_close();
+echo form_close();
 
 //Right image
 echo form_open('rate');
@@ -29,5 +29,5 @@ $data = array(
 			'alt'	=> 'Right wins!'
              );
 echo form_input($data);
-echo from_close();
+echo form_close();
 ?>
