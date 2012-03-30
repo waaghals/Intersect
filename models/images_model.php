@@ -10,8 +10,12 @@ class Images_model extends CI_Model {
 	}
 	
 	private function images($number, $worst) {
+		if( ! is_numeric($number)) {
+			show_error('Number of images is not a valid number.');
+			return;
+		}
 		//Order asc when worst, desc when best
-		$order = ($worst) ? 'desc': 'asc';
+		$order = ($worst) ? 'ASC': 'DESC';
 			
 		$sql = "
 			SELECT 
@@ -21,9 +25,9 @@ class Images_model extends CI_Model {
 			FROM image AS i
 				JOIN image_data AS d 
 					ON ( i.id = d.image_id ) 
-			ORDER BY score ?
-			LIMIT 0 , ?";
-		
+			ORDER BY rating " . $order . "
+			LIMIT 0 , " . $number;
+
 		$q = $this->db->query($sql);	
 		if ($q->num_rows() > 0)
 		{
@@ -34,17 +38,14 @@ class Images_model extends CI_Model {
 	
 	
 	public function percentile() {
-		
 		//This is a heavy query. The query results are cached with cron with the cron_model. Execution times are over 10 seconds with 20k images.
-		$this->load->driver('cache');
+		$this->load->driver('cache', array('adapter'=>'file'));    
 
 		if ( ! $percentile_result = $this->cache->get('percentile_result')) {
-			
-			
 			//Try to get the results, hope the user waits long enough.
 			$ci =& get_instance();
 			$ci->load->model('cron_model', 'cron');
-			$ci->cron->percentile();
+			$ci->cron->update_percentile();
 			
 			//Don't do this recursively, if the percentile query fails there will be a infinite loop
 			if ( ! $percentile_result = $this->cache->get('percentile_result')) {

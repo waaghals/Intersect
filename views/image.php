@@ -1,1 +1,1 @@
-<a href="image_dir/<?php echo $path; ?>"><img src="tiny/<?php echo $path; ?>" alt="<?php echo $id; ?>"/></a>
+<a href="<?php echo $this->config->item('img_dir').$path; ?>"><img src="<?php echo $this->config->item('img_dir').$path; ?>" alt="<?php echo $id; ?>"/></a>
