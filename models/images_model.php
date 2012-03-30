@@ -105,7 +105,7 @@ class Images_model extends CI_Model {
 					id, 
 					digest, 
 					extension, 
-					replace(CONVERT(datetime,date), \'-\', \'/\') AS datetime 
+					replace(CONVERT(datetime,date), '-', '/') AS datetime 
 				FROM image 
 				WHERE id = ?";
 		$q = $this->db->query($sql, $id);
