@@ -21,7 +21,7 @@ class Rate extends CI_Controller {
 			$this->load->model('Images_model', 'images');
 			$winner_rating = $this->images->get_rating($winner);
 			$loser_rating = $this->images->get_rating($loser);
-
+			
 			if( ! $winner_rating || ! $loser_rating)
 			{
 				//Id's are unvalid
@@ -34,8 +34,13 @@ class Rate extends CI_Controller {
 			$this->rate->calc_new_ratings();
 			
 			//Update the new ratings
-			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
-			$q = $this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
+			$this->db->trans_start();
+			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
+			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
+			$this->db->trans_complete();
+			if ($this->db->trans_status() === FALSE) {
+				show_error('Error on updating the image ratings');
+			}
 			
 			$this->load->helper('url');
 			redirect('/');
