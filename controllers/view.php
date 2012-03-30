@@ -8,22 +8,32 @@ class View extends CI_Controller {
 		$this->load->view('image', $img);
 	}
 	
-	public function top($number = 500) {
+	public function top($number = 500, $container_width = 1024) {
 		$this->load->model('images_model', 'images');
+		$this->load->helper('image_justifaction_helper');
 		
-		foreach($this->images->best($number) as $image) {
-			$data = array('path' => $image->path, 'id' => $image->id);
-			$this->load->view('image', $data);
+		$rows = build_gallery($this->images->best($number), $container_width);
+		
+		foreach($rows as $row) {
+			foreach($row as $image) {
+				echo $this->load->view('resized_image', $image, true);
+			}
+			echo '<br />';
 		}
 		$this->load->view('tracker');
 	}
 	
-	public function percentile() {
+	public function percentile($container_width = 1024) {
 		$this->load->model('images_model', 'images');
+		$this->load->helper('image_justifaction_helper');
 		
-		foreach($this->images->percentile() as $image) {
-			$data = array('path' => $image->path, 'id' => $image->id);
-			$this->load->view('image', $data);
+		$rows = build_gallery($this->images->percentile(), $container_width);
+		
+		foreach($rows as $row) {
+			foreach($row as $image) {
+				echo $this->load->view('resized_image', $image, true);
+			}
+			echo '<br />';
 		}
 		$this->load->view('tracker');
 	}

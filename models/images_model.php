@@ -21,7 +21,12 @@ class Images_model extends CI_Model {
 			SELECT 
 				i.id, 
 				CONCAT( replace( CONVERT( datetime, date ) , '-', '/' ) , '/', digest, '.', extension ) AS path, 
-				d.width * d.height / 150000 + i.rating AS rating
+				d.width * d.height / 150000 + i.rating AS rating,
+				d.width AS width,
+				d.height AS height,
+				ROUND(125 / d.height * d.width) AS twidth,
+				125 AS theight,
+				NULL AS vwidth
 			FROM image AS i
 				JOIN image_data AS d 
 					ON ( i.id = d.image_id ) 
@@ -31,7 +36,7 @@ class Images_model extends CI_Model {
 		$q = $this->db->query($sql);	
 		if ($q->num_rows() > 0)
 		{
-			return $q->result();
+			return $q->result_array();
 		}
 		return FALSE;
 	}
