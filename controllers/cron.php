@@ -10,8 +10,19 @@ class Cron extends CI_Controller {
 	}
 	
 	public function hourly() {
-		$this->cron->update_tag_map();
-		$this->cron->update_percentile();
+		echo "Updating tag graph: ";
+		if ($this->cron->update_tag_graph()) {
+			echo "Success\n";
+		} else {
+			echo "Failed \n";
+		}
+		
+		echo "Updating percentile: ";
+		if ($this->cron->update_percentile()) {
+			echo "Success\n";
+		} else {
+			echo "Failed \n";
+		}
 	}
 }
 

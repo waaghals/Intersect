@@ -1,10 +1,10 @@
 <?php
 class Cron_model extends CI_Model {
 	
-	public function update_tag_graph($number) {
+	public function update_tag_graph() {
 		$this->db->trans_start();
 		$this->db->query('TRUNCATE TABLE tag_graph');
-		$this->db->query('INSERT INTO tag_graph (origid,destid, weight)
+		$this->db->query('INSERT INTO tag_graph (origid, destid, weight)
 							SELECT	a.tag_id AS origid,
 									b.tag_id AS destid,
 									COUNT(DISTINCT a.image_id) /
@@ -23,7 +23,10 @@ class Cron_model extends CI_Model {
 		$this->db->trans_complete();
 		if ($this->db->trans_status() === FALSE) {
      		log_message('error', 'Could not update the tag_graph table');
+			show_error('Could not update the tag_graph table');
+			return FALSE;
 		}
+		return TRUE;
 	}
 	
 	public function update_percentile() {
@@ -49,7 +52,7 @@ class Cron_model extends CI_Model {
 				   GROUP BY rating )g2 ON g1.rating < g2.rating
 				GROUP BY g2.rating HAVING percentile >= 0.99";
 		$q = $this->db->query($sql);	
-		$this->load->driver('cache');
+		$this->load->driver('cache', array('adapter'=>'file'));    
 		
 		if ($q->num_rows() > 0) {
 			$ttl = 3600 + 100; //Longer than a hour so the results are always from the cache
@@ -58,6 +61,7 @@ class Cron_model extends CI_Model {
 		}
 		
 		log_message('error', 'Failed to get the 99 percentile from the database.');
+		show_error('Failed to get the 99 percentile from the database.');
 		$this->cache->save('percentile_result', FALSE, $ttl);
 		return FALSE;
 	}
