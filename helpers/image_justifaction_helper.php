@@ -52,23 +52,11 @@ if ( ! function_exists('trim_row')) {
 if ( ! function_exists('build_gallery')) {
 	function build_gallery($images, $width) {
 			$rows = array();
-			
 			while(count($images) > 0) {
 				array_push($rows, build_row($images, $width, '3'));
 			}
-			
-			/*foreach($rows as &$row) {
-				$row = calc_row_height($row);
-			}*/
-			return $rows;
-	}
-}
 
-if ( ! function_exists('calc_img_height')) {
-	function calc_img_height($width, $height, $new_width) {
-		$ratio = $new_width / $width;
-		$new_height = $height * $ratio;
-		return $new_height;
+			return $rows;
 	}
 }
 

@@ -24,8 +24,8 @@ class Images_model extends CI_Model {
 				d.width * d.height / 150000 + i.rating AS rating,
 				d.width AS width,
 				d.height AS height,
-				ROUND(125 / d.height * d.width) AS twidth,
-				125 AS theight,
+				ROUND(250 / d.height * d.width) AS twidth,
+				250 AS theight,
 				NULL AS vwidth
 			FROM image AS i
 				JOIN image_data AS d 
