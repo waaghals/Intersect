@@ -4,6 +4,7 @@ class Image extends CI_Controller {
 	
 	public function resize($img_id, $width = 400, $height = 250)
 	{
+		$this->output->cache(60*60*24);
 		$this->load->model('images_model', 'images');
 		$image = $this->images->get_image($img_id);
 		
@@ -27,7 +28,11 @@ class Image extends CI_Controller {
 		}
 
         $this->load->library('image_lib', $config);
+		ob_start();
         $this->image_lib->resize();
+		$data['echo_this'] = ob_get_contents();
+		ob_end_clean();
+		$this->load->view('echo', $data);;
 	}
 }
 /* End of file image.php */
