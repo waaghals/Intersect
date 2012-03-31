@@ -2,7 +2,7 @@
 
 class Image extends CI_Controller {
 	
-	public function resize($img_id, $width = 400, $height = 125)
+	public function resize($img_id, $width = 400, $height = 250)
 	{
 		$this->load->model('images_model', 'images');
 		$image = $this->images->get_image($img_id);
@@ -12,7 +12,7 @@ class Image extends CI_Controller {
         $config['maintain_ratio'] = TRUE;
         $config['dynamic_output'] = TRUE;
 		$config['master_dim'] = 'auto';
-		
+
 		//width and height need to be specified or the image gets skewed
 		if(is_numeric($width)) {
 			$config['width'] = $width;
@@ -29,7 +29,6 @@ class Image extends CI_Controller {
         $this->load->library('image_lib', $config);
         $this->image_lib->resize();
 	}
-	
 }
 /* End of file image.php */
 /* Location: ./application/controllers/image.php */
