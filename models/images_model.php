@@ -1,6 +1,11 @@
 <?php
 class Images_model extends CI_Model {
 	
+	function __construct() {
+		// Call the Model constructor
+		parent::__construct();
+		$this->load->helper('path');
+	}
 	public function best($number) {
 		return $this->images($number, FALSE);
 	}
@@ -20,7 +25,6 @@ class Images_model extends CI_Model {
 		$sql = "
 			SELECT 
 				i.id, 
-				CONCAT( replace( CONVERT( datetime, date ) , '-', '/' ) , '/', digest, '.', extension ) AS path, 
 				d.width * d.height / 150000 + i.rating AS rating,
 				d.width AS width,
 				d.height AS height,
@@ -62,26 +66,14 @@ class Images_model extends CI_Model {
 	}
 	
 	public function random() {
-		
-		$sql = "SELECT 
-					MAX(`id`) AS max_id , 
-					MIN(`id`) AS min_id 
-				FROM image";
+		$sql = "SELECT id FROM image";
 		$q = $this->db->query($sql);
-		$row = $q->row();
+		$rows = $q->result_array();
 		
-		$sql = "SELECT 
-					id, 
-					digest, 
-					extension, 
-					replace(CONVERT(datetime,date), '-', '/') AS datetime 
-				FROM image 
-				WHERE id >= ?";
-		$q = $this->db->query($sql, array(mt_rand($row->min_id, $row->max_id)));
-		$row = $q->row();
+		$this->load->helper('array');
+		$rand_row = random_element($rows);
 
-		$path = $this->config->item('img_dir') . '/' . $row->datetime . '/' . $row->digest . '.' . $row->extension;
-		return array('path' => $path, 'id' => $row->id);
+		return path_to_image($rand_row['id']) . $rand_row['id'];
 	}
 
 	public function get_rating($id) {
@@ -109,9 +101,8 @@ class Images_model extends CI_Model {
 				FROM image 
 				WHERE id = ?";
 		$q = $this->db->query($sql, $id);
-		$row = $q->row();
-		
-		$path = $row->datetime . '/' . $row->digest . '.' . $row->extension;
+		$row = $q->row_array();
+
 		return array('path' => $path, 'id' => $row->id);
 	}
 	

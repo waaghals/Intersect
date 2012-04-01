@@ -5,11 +5,13 @@ class Image extends CI_Controller {
 	public function resize($img_id, $width = 400, $height = 250)
 	{
 		$this->output->cache(60*60*24);
+		$this->load->helper('path');
 		$this->load->model('images_model', 'images');
 		$image = $this->images->get_image($img_id);
+
 		
 		$config['image_library'] = 'gd2';
-        $config['source_image'] = $image['path'];
+        $config['source_image'] = path_to_image($img_id) . $img_id;
         $config['maintain_ratio'] = TRUE;
         $config['dynamic_output'] = TRUE;
 		$config['master_dim'] = 'auto';
@@ -18,21 +20,21 @@ class Image extends CI_Controller {
 		if(is_numeric($width)) {
 			$config['width'] = $width;
 		} else {
-			$config['width'] = 4000;
+			$config['width'] = $this->config->item('max_width');
 		}
 		
 		if(is_numeric($height)) {
 			$config['height'] = $height;
 		} else {
-			$config['height'] = 4000;
+			$config['height'] = $this->config->item('max_height');
 		}
 
         $this->load->library('image_lib', $config);
 		ob_start();
-        $this->image_lib->resize();
+		$this->image_lib->resize();
 		$data['echo_this'] = ob_get_contents();
 		ob_end_clean();
-		$this->load->view('echo', $data);;
+		$this->load->view('echo', $data);
 	}
 }
 /* End of file image.php */
