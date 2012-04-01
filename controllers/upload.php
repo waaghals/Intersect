@@ -5,25 +5,35 @@ class Upload extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->helper(array('form', 'url'));
+		$this->load->driver('cache', array('adapter' => 'file'));
 	}
 
 	function index() {
-		$this->load->view('upload/form', array('error' => ' ' ));
+		if ($this->cache->get('vacuuming') === FALSE) {
+			$this->load->view('upload/form');
+		} else {
+			show_error('One moment, the upload folder is being vacuumed by our cleaning lady, please try again.');
+		}
 	}
 
 	function process() {
 		$this->load->library('upload');
-
-		if ( ! $this->upload->do_upload()) {
-			show_error('Failed to upload the file, please try again.');
-		} else {
-			//Upload successfull
-			$this->load->model('process_model', 'process');
+		if ($this->cache->get('vacuuming') === FALSE) {
 			
-			//Try and process the file; insert in to database and move the uploaded file
-			if( ! $this->process->image($this->upload->data())) {
-				show_error('Something went wrong, please try again.');
+			//Not 'vacuuming', free to upload files
+			if ( ! $this->upload->do_upload()) {
+			show_error('Failed to upload the file, please try again.');
+			} else {
+				//Upload successfull
+				$this->load->model('process_model', 'process');
+				
+				//Try and process the file; insert in to database and move the uploaded file
+				if( ! $this->process->image($this->upload->data())) {
+					show_error('Something went wrong, please try again.');
+				}
 			}
+		} else {
+			show_error('One moment, the upload folder is being vacuumed by our cleaning lady, please try again.');
 		}
 	}
 }
