@@ -4,7 +4,7 @@ class Signature_model extends CI_Model {
 	private function split_into_words($sig) {
 	    $words = array();
 
-		for ($i=0; $i < strlen($sig); $i++) { 
+		for ($i=0; $i < $this->config->item('max_words'); $i++) { 
 			$words[] = substr($sig, $i, $this->config->item('max_word_length'));
 		}
 
