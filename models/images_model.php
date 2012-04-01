@@ -47,14 +47,12 @@ class Images_model extends CI_Model {
 	
 	
 	public function percentile() {
-		//This is a heavy query. The query results are cached with cron with the cron_model. Execution times are over 10 seconds with 20k images.
+		//This is a heavy query. The query results are cached. Execution times are over 10 seconds with 20k images.
 		$this->load->driver('cache', array('adapter'=>'file'));    
 
 		if ( ! $percentile_result = $this->cache->get('percentile_result')) {
 			//Try to get the results, hope the user waits long enough.
-			$ci =& get_instance();
-			$ci->load->model('cron_model', 'cron');
-			$ci->cron->update_percentile();
+			$this->update_percentile();
 			
 			//Don't do this recursively, if the percentile query fails there will be a infinite loop
 			if ( ! $percentile_result = $this->cache->get('percentile_result')) {
@@ -92,27 +90,12 @@ class Images_model extends CI_Model {
 		return FALSE;
 	}
 	
-	public function get_image($id) {
-		$sql = "SELECT 
-					id, 
-					digest, 
-					extension, 
-					replace(CONVERT(datetime,date), '-', '/') AS datetime 
-				FROM image 
-				WHERE id = ?";
-		$q = $this->db->query($sql, $id);
-		$row = $q->row_array();
-
-		return array('path' => $path, 'id' => $row->id);
-	}
-	
 	public function update_percentile() {
 		
 		$sql = "SELECT 	g2.id AS id,
 				       	SUM(g1.r) /
 				  (SELECT COUNT(*)
 				   FROM image) AS percentile,
-				   		CONCAT(replace(CONVERT(g2.datetime, date) , '-', '/') , '/', g2.digest, '.', g2.extension) AS path,
 				   		d.width AS width,
 				   		d.height AS height,
 				  		ROUND(250 / d.height * d.width) AS twidth,
@@ -126,9 +109,7 @@ class Images_model extends CI_Model {
 				JOIN
 				  ( SELECT COUNT(*) r,
 				           rating,
-				           datetime,
 				           digest,
-				           extension,
 				           id
 				   FROM image
 				   GROUP BY rating )g2 ON g1.rating < g2.rating

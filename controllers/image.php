@@ -6,15 +6,12 @@ class Image extends CI_Controller {
 	{
 		$this->output->cache(60*60*24);
 		$this->load->helper('path');
-		$this->load->model('images_model', 'images');
-		$image = $this->images->get_image($img_id);
 
-		
-		$config['image_library'] = 'gd2';
-        $config['source_image'] = path_to_image($img_id) . $img_id;
-        $config['maintain_ratio'] = TRUE;
-        $config['dynamic_output'] = TRUE;
-		$config['master_dim'] = 'auto';
+		$config['image_library'] 	= 'gd2';
+        $config['source_image'] 	= path_to_image($img_id) . $img_id;
+        $config['maintain_ratio'] 	= TRUE;
+        $config['dynamic_output'] 	= TRUE;
+		$config['master_dim'] 		= 'auto';
 
 		//width and height need to be specified or the image gets skewed
 		if(is_numeric($width)) {
