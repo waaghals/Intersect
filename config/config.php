@@ -1,7 +1,4 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-$config['img_dir']	= 'http://atlas.waaghals.me/';
-
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
