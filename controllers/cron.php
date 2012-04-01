@@ -5,20 +5,20 @@ class Cron extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		
-		$this->load->model('cron_model', 'cron');
 	}
 	
 	public function hourly() {
+		$this->load->model('tag_model', 'tag');
 		echo "Updating tag graph: ";
-		if ($this->cron->update_tag_graph()) {
+		if ($this->tag->update_graph()) {
 			echo "Success\n";
 		} else {
 			echo "Failed \n";
 		}
 		
+		$this->load->model('images_model', 'images');
 		echo "Updating percentile: ";
-		if ($this->cron->update_percentile()) {
+		if ($this->images->update_percentile()) {
 			echo "Success\n";
 		} else {
 			echo "Failed \n";

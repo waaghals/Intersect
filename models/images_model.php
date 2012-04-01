@@ -114,4 +114,47 @@ class Images_model extends CI_Model {
 		$path = $row->datetime . '/' . $row->digest . '.' . $row->extension;
 		return array('path' => $path, 'id' => $row->id);
 	}
+	
+	public function update_percentile() {
+		
+		$sql = "SELECT 	g2.id AS id,
+				       	SUM(g1.r) /
+				  (SELECT COUNT(*)
+				   FROM image) AS percentile,
+				   		CONCAT(replace(CONVERT(g2.datetime, date) , '-', '/') , '/', g2.digest, '.', g2.extension) AS path,
+				   		d.width AS width,
+				   		d.height AS height,
+				  		ROUND(250 / d.height * d.width) AS twidth,
+				   		250 AS theight,
+				   		NULL AS vwidth
+				FROM
+				  ( SELECT COUNT(*) r,
+				           rating
+				   FROM image
+				   GROUP BY rating )g1
+				JOIN
+				  ( SELECT COUNT(*) r,
+				           rating,
+				           datetime,
+				           digest,
+				           extension,
+				           id
+				   FROM image
+				   GROUP BY rating )g2 ON g1.rating < g2.rating
+				JOIN image_data as d ON g2.id = d.image_id
+				GROUP BY g2.rating HAVING percentile >= 0.99";
+		$q = $this->db->query($sql);	
+		$this->load->driver('cache', array('adapter'=>'file'));    
+		
+		if ($q->num_rows() > 0) {
+			$ttl = 3600 + 100; //Longer than a hour so the results are always from the cache
+			$this->cache->save('percentile_result', $q->result_array(), $ttl);
+			return TRUE;
+		}
+		
+		log_message('error', 'Failed to get the 99 percentile from the database.');
+		show_error('Failed to get the 99 percentile from the database.');
+		$this->cache->save('percentile_result', FALSE, $ttl);
+		return FALSE;
+	}
 }
