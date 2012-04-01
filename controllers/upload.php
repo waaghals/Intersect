@@ -15,8 +15,7 @@ class Upload extends CI_Controller {
 		$this->load->library('upload');
 
 		if ( ! $this->upload->do_upload()) {
-			var_dump($this->upload->display_errors());
-			//show_error('Failed to upload the file, please try again.');
+			show_error('Failed to upload the file, please try again.');
 		} else {
 			//Upload successfull
 			$this->load->model('process_model', 'process');
