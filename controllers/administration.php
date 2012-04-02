@@ -2,15 +2,15 @@
 
 class Administration extends CI_Controller {
 	
-	public function migrate()
-	{
+	public function migrate() {
 		$this->load->library('migration');
-
+		$this->output->enable_profiler(TRUE);
+		
 		if ( ! $this->migration->current())
 		{
 			show_error($this->migration->error_string());
 		}
-		echo 'Success';
+		echo 'Database migration succesfull';
 	}
 }
 /* End of file administration.php */
