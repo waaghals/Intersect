@@ -46,21 +46,21 @@ class Images_model extends CI_Model {
 	}
 	
 	
-	public function percentile() {
+	public function quantiles() {
 		//This is a heavy query. The query results are cached. Execution times are over 10 seconds with 20k images.
 		$this->load->driver('cache', array('adapter'=>'file'));    
 
-		if ( ! $percentile_result = $this->cache->get('percentile_result')) {
+		if ( ! $quantiles = $this->cache->get('quantiles')) {
 			//Try to get the results, hope the user waits long enough.
-			$this->update_percentile();
+			$this->calc_quantiles(10);
 			
-			//Don't do this recursively, if the percentile query fails there will be a infinite loop
-			if ( ! $percentile_result = $this->cache->get('percentile_result')) {
+			//Don't do this recursively, if the query fails there will be a infinite loop
+			if ( ! $quantiles = $this->cache->get('quantiles')) {
 				show_error('Could not get query result from cache.');
 				return FALSE;
 			}
  		}
-		return $percentile_result;
+		return $quantiles;
 	}
 	
 	public function random() {
@@ -90,37 +90,31 @@ class Images_model extends CI_Model {
 		return FALSE;
 	}
 	
-	public function update_percentile() {
+	public function calc_quantiles($nth) {
 		
-		$sql = "SELECT 	g2.id AS id,
-				       	SUM(g1.r) /
-				  (SELECT COUNT(*)
-				   FROM image) AS percentile,
-				   		d.width AS width,
-				   		d.height AS height,
-				  		ROUND(250 / d.height * d.width) AS twidth,
-				   		250 AS theight,
-				   		NULL AS vwidth
-				FROM
-				  ( SELECT COUNT(*) r,
-				           rating
-				   FROM image
-				   GROUP BY rating )g1
-				JOIN
-				  ( SELECT COUNT(*) r,
-				           rating,
-				           digest,
-				           id
-				   FROM image
-				   GROUP BY rating )g2 ON g1.rating < g2.rating
-				JOIN image_data as d ON g2.id = d.image_id
-				GROUP BY g2.rating HAVING percentile >= 0.99";
-		$q = $this->db->query($sql);	
-		$this->load->driver('cache', array('adapter'=>'file'));    
+		//Copyrighted Roland Bouman
+		//http://forge.mysql.com/tools/tool.php?id=149
+		$this->db->query("SET @quantiles:= ?", $nth);
+		$sql = "
+			SELECT	rating                     AS metric,
+					@n DIV (@c DIV @quantiles) AS quantile,
+					@n                         AS N
+			FROM	image
+			CROSS JOIN (
+						SELECT @n:=0,
+						@c:=COUNT(*)
+			            FROM	image
+			           ) c
+			WHERE      NOT (
+			               (@n:=@n+1) % (@c DIV @quantiles)
+			           ) 
+			ORDER BY   rating";
+		$q = $this->db->query($sql);
+		$this->load->driver('cache', array('adapter'=>'file'));
 		
 		if ($q->num_rows() > 0) {
 			$ttl = 3600 + 100; //Longer than a hour so the results are always from the cache
-			$this->cache->save('percentile_result', $q->result_array(), $ttl);
+			$this->cache->save('quantiles', $q->result_array(), $ttl);
 			return TRUE;
 		}
 		
