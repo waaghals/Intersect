@@ -36,6 +36,12 @@ class Upload extends CI_Controller {
 				if( ! $this->process->image($this->upload->data())) {
 					show_error('Something went wrong, please try again.');
 				}
+				
+				//Update the user expire time by 24 hours
+				$this->load->model('users_model', 'users');
+				$this->users->add_time('24 HOUR');
+				$this->session->set_flashdata('success', 'Image uploaded');
+				redirect('/');
 			}
 		} else {
 			show_error('One moment, the upload folder is being vacuumed by our cleaning lady, please try again.');

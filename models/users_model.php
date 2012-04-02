@@ -84,6 +84,15 @@ class Users_model extends CI_Model
 		$this->db->update('user');
 		return $this->db->affected_rows() > 0;
 	}
+	
+	function add_time($interval) {
+		$column = "IF(expiration >= NOW(),
+					DATE_ADD(expiration, INTERVAL " . $interval . "),
+					DATE_ADD(NOW(), INTERVAL " . $interval . "))";
+		$this->db->set('expiration', $column, FALSE);
+		$this->db->where('id', $this->auth->get_user_id(), FALSE);
+		$this->db->update('user');
+	}
 }
 
 /* End of file users.php */
