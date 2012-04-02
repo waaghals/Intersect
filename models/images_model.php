@@ -118,9 +118,9 @@ class Images_model extends CI_Model {
 			return TRUE;
 		}
 		
-		log_message('error', 'Failed to get the 99 percentile from the database.');
-		show_error('Failed to get the 99 percentile from the database.');
-		$this->cache->save('percentile_result', FALSE, $ttl);
+		log_message('error', 'Failed to get the quantiles from the database.');
+		//If there arn't enough images there won't be any result. To prevent the login from failing set some bogus data.
+		$this->cache->save('quantiles', array(array('metric' => 1200, 'quantile' => 1, 'N' => 1)), $ttl);
 		return FALSE;
 	}
 }
