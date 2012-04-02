@@ -2,6 +2,17 @@
 
 class Rate extends CI_Controller {
 
+
+	function __construct() {
+		parent::__construct();
+		$this->load->helper('url');
+		
+		if( ! $this->auth->is_allowed()) {
+			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			redirect('/upload');
+		}
+	}
+	
 	public function index()
 	{
 		$this->load->library('form_validation');

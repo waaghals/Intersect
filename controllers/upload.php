@@ -6,6 +6,11 @@ class Upload extends CI_Controller {
 		parent::__construct();
 		$this->load->helper(array('form', 'url'));
 		$this->load->driver('cache', array('adapter' => 'file'));
+		
+		if( ! $this->auth->is_logged_in()) {
+			$this->session->set_flashdata('warning', 'You are not logged in.');
+			redirect('/user/sign_in');
+		}
 	}
 
 	function index() {

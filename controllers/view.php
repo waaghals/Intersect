@@ -1,6 +1,16 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class View extends CI_Controller {
+	
+	function __construct() {
+		parent::__construct();
+		$this->load->helper('url');
+		
+		if( ! $this->auth->is_allowed()) {
+			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			redirect('/upload');
+		}
+	}
 
 	public function image($id) {
 		$this->load->model('images_model', 'images');

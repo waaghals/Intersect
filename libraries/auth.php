@@ -38,6 +38,18 @@ class Auth {
 	function is_logged_in() {
 		return $this->ci->session->userdata('level') > 0;
 	}
+	
+	function is_allowed() {
+		return $this->ci->session->userdata('level') > 1;
+	}
+	
+	function is_mod() {
+		return $this->ci->session->userdata('level') > 4;
+	}
+
+	function is_admin() {
+		return $this->ci->session->userdata('level') > 8;
+	}
 
 	function get_user_id() {
 		return $this->ci->session->userdata('user_id');

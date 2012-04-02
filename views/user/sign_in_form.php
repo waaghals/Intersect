@@ -15,7 +15,7 @@
 <input type="text" name="password" value="" size="50" />
 
 <div><input type="submit" value="Submit" name="submit" /></div>
-
+<a href="/user/sign_up">I don't have an account</a>
 </form>
 
 </body>

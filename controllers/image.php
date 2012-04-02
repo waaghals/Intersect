@@ -2,11 +2,20 @@
 
 class Image extends CI_Controller {
 	
+	function __construct() {
+		parent::__construct();
+		$this->load->helper(array('path', 'url'));
+		
+		if( ! $this->auth->is_allowed()) {
+			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			redirect('/upload');
+		}
+	}
+	
 	public function resize($img_id, $width = 400, $height = 250)
 	{
 		$this->output->cache(60*60*24);
-		$this->load->helper('path');
-
+		
 		$config['image_library'] 	= 'gd2';
         $config['source_image'] 	= path_to_image($img_id) . $img_id;
         $config['maintain_ratio'] 	= TRUE;

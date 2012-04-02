@@ -2,6 +2,13 @@
 
 class Administration extends CI_Controller {
 	
+	public function __construct() {
+		parent::__construct();
+ 		
+		if( ! $this->auth->is_admin()) {
+			show_404();
+		}
+	}
 	public function migrate() {
 		$this->load->library('migration');
 		$this->output->enable_profiler(TRUE);
