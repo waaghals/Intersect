@@ -22,7 +22,14 @@ class Users_model extends CI_Model
 		//Only use the first row
 		$quantile = $rows[0]['metric'];
 		
-		$sql = "SELECT u.id, name, level, LOWER(HEX(passhash)) AS passhash, IF(AVG(i.rating) < ?, TRUE, FALSE) AS banned
+		//If the user has a level above 8 he cannot be auto banned. 
+		//Users with level above 5 don't 'expire'
+		$sql = "SELECT 
+					u.id, 
+					name, 
+					IF(level > 5, level, IF(DATEDIFF(expiration,NOW()) > 0, level, 1)) AS level,
+					LOWER(HEX(passhash)) AS passhash, 
+					IF(level > 8, FALSE, IF(AVG(i.rating) < ?, TRUE, FALSE)) AS banned
 					FROM user AS u
 					JOIN user_image AS ui
 						ON u.id = ui.user_id
