@@ -11,22 +11,23 @@ class Signature_model extends CI_Model {
 	    return $words;
 	}
 	
-	public function save($md5, $cvec) {
+	public function save($hash, $cvec) {
 	    $compressed_cvec = puzzle_compress_cvec($cvec);
 	    $words = $this->split_into_words($cvec);
 		
-		$sql = "SELECT id FROM image WHERE digest = ?"; 
-		$r = $this->db->query($sql, array($md5));
+		$sql = "SELECT id FROM image WHERE LOWER(HEX(hash)) = ?"; 
+		$r = $this->db->query($sql, $hash);
 		if ($r->num_rows() > 0) {
 			$row = $r->row(); 
 			
-			//It is a exact duplicate based on the md5
+			//It is a exact duplicate based on the hash
 			return $row->id;
 		}
 		
 		//No duplicate found
-		$sql = "INSERT INTO image (digest, uploaded) VALUES (?, ?)";
-		$this->db->query($sql, array($md5, date("Y-m-d H:i:s")));
+		$this->db->set('hash', 'UNHEX(\'' . $hash . '\')', FALSE);
+		$this->db->set('uploaded', date("Y-m-d H:i:s"));
+		$this->db->insert('image');
 		$image_id = $this->db->insert_id();
 		
 		//Insert the new signature in the db
@@ -43,7 +44,7 @@ class Signature_model extends CI_Model {
 		return $image_id;
 	}
 
-	public function similar($md5, $cvec, $threshold = PUZZLE_CVEC_SIMILARITY_THRESHOLD) {
+	public function similar($cvec, $threshold = PUZZLE_CVEC_SIMILARITY_THRESHOLD) {
 
 	    $words = $this->split_into_words($cvec);
 		$sql = 'SELECT compressed_signature, image_id 

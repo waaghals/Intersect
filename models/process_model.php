@@ -4,9 +4,9 @@ class Process_model extends CI_Model {
 	var $image_id;
 	public function image($upload_data) {
 		
-		$md5 = @md5_file($upload_data['full_path']);
-		if (strlen($md5) != 32) {
-	        show_error('Unable to get the MD5 of the file');
+		$hash = @sha1_file($upload_data['full_path']);
+		if (strlen($hash) != 40) {
+	        show_error('Unable to get the hash of the file');
 			unlink($upload_data['full_path']);
 	        return FALSE;
 	    }
@@ -23,7 +23,7 @@ class Process_model extends CI_Model {
 		$this->load->model('signature_model', 'signature');
 		//Insert everything in the database
 		$this->db->trans_begin();
-		$this->image_id = $this->signature->save($md5, $cvec);
+		$this->image_id = $this->signature->save($hash, $cvec);
 		$this->store_data($upload_data);
 		
 		//Try to move the uploaded file
