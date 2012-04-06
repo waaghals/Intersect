@@ -46,7 +46,7 @@ class Images_model extends CI_Model {
 	}
 	
 	
-	public function quantiles() {
+	public function update_quantiles() {
 		//This is a heavy query. The query results are cached. Execution times are over 10 seconds with 20k images.
 		$this->load->driver('cache', array('adapter'=>'file'));    
 
@@ -120,7 +120,7 @@ class Images_model extends CI_Model {
 		
 		log_message('error', 'Failed to get the quantiles from the database.');
 		//If there arn't enough images there won't be any result. To prevent the login from failing set some bogus data.
-		$this->cache->save('quantiles', array(array('metric' => 1200, 'quantile' => 1, 'N' => 1)), $ttl);
+		$this->cache->save('quantiles', array(array('metric' => 1200, 'quantile' => 1, 'N' => 1)), 100);
 		return FALSE;
 	}
 }

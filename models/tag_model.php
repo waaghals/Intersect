@@ -16,7 +16,7 @@ class Tag_model extends CI_Model {
 		return FALSE;
 	}
 	
-	public function update_tag_graph() {
+	public function update_graph() {
 		$this->db->trans_start();
 		$this->db->query('TRUNCATE TABLE tag_graph');
 		$this->db->query('INSERT INTO tag_graph (origid, destid, weight)

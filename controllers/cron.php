@@ -27,8 +27,8 @@ class Cron extends CI_Controller {
 		}
 		
 		$this->load->model('images_model', 'images');
-		echo "Updating percentile: ";
-		if ($this->images->update_percentile()) {
+		echo "Updating quantiles: ";
+		if ($this->images->update_quantiles()) {
 			echo "Success\n";
 		} else {
 			echo "Failed \n";
