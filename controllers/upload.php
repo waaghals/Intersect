@@ -9,6 +9,7 @@ class Upload extends CI_Controller {
 		
 		if( ! $this->auth->is_logged_in()) {
 			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->keep_flashdata('redirect');
 			redirect('/user/sign_in');
 		}
 	}
@@ -41,6 +42,9 @@ class Upload extends CI_Controller {
 				$this->load->model('users_model', 'users');
 				$this->users->add_time('24 HOUR');
 				$this->session->set_flashdata('success', 'Image uploaded');
+				if($redirect = $this->session->flashdata('redirect')) {
+					redirect($redirect);
+				}
 				redirect('/');
 			}
 		} else {

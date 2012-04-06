@@ -8,6 +8,7 @@ class Image extends CI_Controller {
 		
 		if( ! $this->auth->is_allowed()) {
 			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
 	}

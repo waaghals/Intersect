@@ -2,12 +2,13 @@
 
 class View extends CI_Controller {
 	
-	function __construct() {
+	public function __construct() {
 		parent::__construct();
 		$this->load->helper('url');
 		
 		if( ! $this->auth->is_allowed()) {
 			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
 	}

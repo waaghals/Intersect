@@ -33,17 +33,23 @@ class User extends CI_Controller {
 	
 			if ($this->form_validation->run() == FALSE) {
 				$this->load->view('user/sign_in_form');
+				$this->session->keep_flashdata('redirect');
 			} else {
 				if ($this->auth->login($this->input->post('username'), $this->input->post('password'))) {
 					$this->session->set_flashdata('success', 'Login successfull');
+					if($redirect = $this->session->flashdata('redirect')) {
+						redirect($redirect);
+					}
 					redirect('/');
 				} else {
 					$this->load->view('user/sign_in_form');
+					$this->session->keep_flashdata('redirect');
 				}
 			}
 		} else {
 			//Show the login form
 			$this->load->view('user/sign_in_form');
+			$this->session->keep_flashdata('redirect');
 		}
 		
 	}

@@ -40,7 +40,7 @@ class Auth {
 	}
 	
 	function is_allowed() {
-		return $this->ci->session->userdata('level') > 1;
+		return $this->ci->session->userdata('level') >= 1;
 	}
 	
 	function is_mod() {
