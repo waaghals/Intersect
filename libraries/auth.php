@@ -52,7 +52,7 @@ class Auth {
 	}
 
 	function get_user_id() {
-		return $this->ci->session->userdata('user_id');
+		return (int) $this->ci->session->userdata('user_id');
 	}
 
 	function get_username() {
