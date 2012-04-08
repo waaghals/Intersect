@@ -6,6 +6,7 @@ class User extends CI_Controller {
 		parent::__construct();
 		$this->load->library('auth');
 		$this->load->helper(array('url', 'form'));
+		$this->load->view('flash');
 	}
 	
 	public function index(){

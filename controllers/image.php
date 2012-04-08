@@ -11,6 +11,7 @@ class Image extends CI_Controller {
 			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
+		$this->load->view('flash');
 	}
 	
 	public function resize($img_id, $width = 400, $height = 250)
