@@ -17,7 +17,7 @@ class Queue_model extends CI_Model {
 	}
 	
 	public function add($image_id, $state = 'O') {
-		$this->db->query("INSERT INTO image_queue(image_id, state) VALUES (?, ?)", array($image_id, $state));
+		$this->db->query("INSERT INTO image_queue(image_id, state, modified) VALUES (?, ?, NOW())", array($image_id, $state));
 	}
 	
 	public function modify($image_id, $state = 'C') {
