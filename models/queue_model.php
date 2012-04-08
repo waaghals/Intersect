@@ -7,8 +7,13 @@ class Queue_model extends CI_Model {
 	}
 	
 	public function purge() {
-		$this->db->query("DELETE FROM image_queue WHERE state = 'C'");
-		$this->db->query("UPDATE image_queue SET state = 'O' , modified = NOW() WHERE state = 'A' AND DATEDIFF(NOW(), modified) > 1");
+		if( ! $this->db->query("DELETE FROM image_queue WHERE state = 'C'")) {
+			return FALSE;
+		}
+		
+		if( ! $this->db->query("UPDATE image_queue SET state = 'O' , modified = NOW() WHERE state = 'A' AND DATEDIFF(NOW(), modified) > 1")) {
+			return FALSE;
+		}
 	}
 	
 	public function add($image_id, $state = 'O') {

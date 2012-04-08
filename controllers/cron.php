@@ -33,6 +33,14 @@ class Cron extends CI_Controller {
 		} else {
 			echo "Failed \n";
 		}
+		
+		$this->load->model('queue_model', 'queue');
+		echo "Purging queue: ";
+		if ($this->queue->purge()) {
+			echo "Success\n";
+		} else {
+			echo "Failed \n";
+		}
 	}
 	
 	public function daily() {
