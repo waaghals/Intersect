@@ -12,6 +12,7 @@ class Rate extends CI_Controller {
 			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
+		$this->load->view('flash');
 	}
 	
 	public function index()
@@ -45,10 +46,15 @@ class Rate extends CI_Controller {
 			$this->rate->set_loser($loser_rating);
 			$this->rate->calc_new_ratings();
 			
+			$this->load->model('queue_model', 'queue');
+			
+			
 			//Update the new ratings
 			$this->db->trans_start();
 			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
+			$this->queue->modify($winner, 'C');
 			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
+			$this->queue->modify($loser, 'C');
 			$this->db->trans_complete();
 			if ($this->db->trans_status() === FALSE) {
 				show_error('Error on updating the image ratings');

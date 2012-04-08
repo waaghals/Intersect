@@ -4,7 +4,7 @@ class Images_model extends CI_Model {
 	function __construct() {
 		// Call the Model constructor
 		parent::__construct();
-		$this->load->helper('path');
+		$this->load->helper('path', 'url');
 	}
 	public function best($number) {
 		return $this->images($number, FALSE);
@@ -67,11 +67,24 @@ class Images_model extends CI_Model {
 		$sql = "SELECT id FROM image";
 		$q = $this->db->query($sql);
 		$rows = $q->result_array();
-		
+		if(count($rows) < 10) {
+			$this->session->set_flashdata('error', 'Not enough images to get a random image. Please upload some extra images.');
+			redirect('/upload');
+		}
 		$this->load->helper('array');
 		$rand_row = random_element($rows);
 
 		return path_to_image($rand_row['id']) . $rand_row['id'];
+	}
+	
+	public function from_queue() {
+		$this->load->model('queue_model', 'queue');
+		
+		if( ! $img_id = $this->queue->get()) {
+			//Queue is empty, return a random image
+			return $this->random();
+		}
+		return path_to_image($img_id) . $img_id;
 	}
 
 	public function get_rating($id) {

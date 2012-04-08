@@ -10,17 +10,24 @@ class Versus extends CI_Controller {
 			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
 			redirect('/upload');
 		}
+		$this->load->view('flash');
 	}
 
 	public function index()
 	{
-		$this->load->model('Images_model', 'image');
-		$data['left'] 		= $this->image->random();
-		$data['right'] 		= $this->image->random();
+		$this->load->model('Images_model', 'images');
+		$data['left'] 		= $this->images->from_queue();
+		$data['right'] 		= $this->images->random();
 		$data['left_id'] 	= array_pop(explode('/',$data['left']));
 		$data['right_id'] 	= array_pop(explode('/',$data['right']));
 		
+		if($data['left_id'] == $data['right_id']) {
+			$this->index();
+			return;
+		}
+
 		$this->load->view('versus', $data);
+		return;
 	}
 }
 
