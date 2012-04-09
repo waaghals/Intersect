@@ -16,12 +16,9 @@ class Signature_model extends CI_Model {
 	    $words = $this->split_into_words($cvec);
 		
 		$sql = "SELECT id FROM image WHERE LOWER(HEX(hash)) = ?"; 
-		$r = $this->db->query($sql, $hash);
-		if ($r->num_rows() > 0) {
-			$row = $r->row(); 
-			
-			//It is a exact duplicate based on the hash
-			return $row->id;
+		$query = $this->db->query($sql, $hash);
+		if ($query->num_rows() > 0) {
+			show_error('Duplicate image, please upload an other image.');
 		}
 		
 		//No duplicate found
