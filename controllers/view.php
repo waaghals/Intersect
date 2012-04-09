@@ -2,7 +2,7 @@
 
 class View extends CI_Controller {
 	
-	public function __construct() {
+	function __construct() {
 		parent::__construct();
 		$this->load->helper('url');
 		
@@ -23,6 +23,18 @@ class View extends CI_Controller {
 		$this->load->view('image', $img);
 		$this->load->view('tags', array('tags' => $tags));
 		$this->load->view('tracker');
+	}
+	
+	public function similar($id) {
+
+		$this->load->model('signature_model', 'signature');
+		$row = $this->signature->get_image_info($id);
+		
+		$similar = $this->signature->find_similar_pictures($row['cvec'], TRUE);
+		//$this->load->helper('path');
+		//echo puzzle_fill_cvec_from_file(path_to_image($id).$id) . "<br >";
+		//echo $sig;
+		var_dump($similar);
 	}
 
 	public function top($number = 500, $container_width = 1024) {
