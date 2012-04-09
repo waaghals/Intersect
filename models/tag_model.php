@@ -1,7 +1,8 @@
 <?php
 class Tag_model extends CI_Model {
-	
-	public function for_image($id) {
+
+	public function for_image($id)
+	{
 		$sql = "SELECT 
 					tag
 				FROM tag
@@ -9,14 +10,15 @@ class Tag_model extends CI_Model {
 				WHERE image_id = ?";
 		$q = $this->db->query($sql, $id);
 
-		if ($q->num_rows() > 0)
+		if($q->num_rows() > 0)
 		{
 			return $q->result_array();
 		}
 		return FALSE;
 	}
-	
-	public function update_graph() {
+
+	public function update_graph()
+	{
 		$this->db->trans_start();
 		$this->db->query('TRUNCATE TABLE tag_graph');
 		$this->db->query('INSERT INTO tag_graph (origid, destid, weight)
@@ -36,12 +38,13 @@ class Tag_model extends CI_Model {
 									b.tag_id
 							ORDER BY weight DESC');
 		$this->db->trans_complete();
-		if ($this->db->trans_status() === FALSE) {
-     		log_message('error', 'Could not update the tag_graph table');
+		if($this->db->trans_status() === FALSE)
+		{
+			log_message('error', 'Could not update the tag_graph table');
 			show_error('Could not update the tag_graph table');
 			return FALSE;
 		}
 		return TRUE;
 	}
-		
+
 }

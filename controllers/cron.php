@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+if( ! defined('BASEPATH'))
+	exit('No direct script access allowed');
 
 class Cron extends CI_Controller {
 
@@ -6,68 +8,90 @@ class Cron extends CI_Controller {
 	{
 		parent::__construct();
 	}
-	
-	public function five() {
+
+	public function five()
+	{
 		$this->load->driver('cache', array('adapter' => 'file'));
 		echo "Cleaning cache: ";
-		if ($this->cache->clean()) {
+		if($this->cache->clean())
+		{
 			echo "Success\n";
-		} else {
+		}
+		else
+		{
 			echo "Failed \n";
 		}
 	}
-	
-	public function hourly() {
+
+	public function hourly()
+	{
 		$this->load->model('tag_model', 'tag');
 		echo "Updating tag graph: ";
-		if ($this->tag->update_graph()) {
+		if($this->tag->update_graph())
+		{
 			echo "Success\n";
-		} else {
+		}
+		else
+		{
 			echo "Failed \n";
 		}
-		
+
 		$this->load->model('images_model', 'images');
 		echo "Updating quantiles: ";
-		if ($this->images->update_quantiles()) {
+		if($this->images->update_quantiles())
+		{
 			echo "Success\n";
-		} else {
+		}
+		else
+		{
 			echo "Failed \n";
 		}
-		
+
 		$this->load->model('queue_model', 'queue');
 		echo "Purging queue: ";
-		if ($this->queue->purge()) {
+		if($this->queue->purge())
+		{
 			echo "Success\n";
-		} else {
+		}
+		else
+		{
 			echo "Failed \n";
 		}
 	}
-	
-	public function daily() {
+
+	public function daily()
+	{
 		$this->load->driver('cache', array('adapter' => 'file'));
 		$this->load->helper('directory');
-		
+
 		//Set a cache file, this will take 1 minutes at most.
 		$this->cache->save('vacuuming', TRUE, 60);
 		echo "Cleaning upload folder: ";
-		//First wait 10 seconds so that any image that ar being uploaded don't get interupted
+		//First wait 10 seconds so that any image that ar being uploaded don't get
+		// interupted
 		sleep(10);
 
 		//Remove the files
 		$map = directory_map(APPPATH . 'tmp/', 1);
 		var_dump($map);
-		foreach($map as $location) {
+		foreach($map as $location)
+		{
 			$location = APPPATH . 'tmp/' . $location;
-			if(is_file($location)) {
+			if(is_file($location))
+			{
 				unlink($location);
 			}
 		}
-		if ($this->cache->delete('vacuuming')) {
+		if($this->cache->delete('vacuuming'))
+		{
 			echo "Success\n";
-		} else {
+		}
+		else
+		{
 			echo "Failed \n";
 		}
 	}
+
 }
 
 /* End of file cron.php */

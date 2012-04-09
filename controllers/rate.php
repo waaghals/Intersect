@@ -1,20 +1,23 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+if( ! defined('BASEPATH'))
+	exit('No direct script access allowed');
 
 class Rate extends CI_Controller {
 
-
-	function __construct() {
+	function __construct()
+	{
 		parent::__construct();
 		$this->load->helper('url');
-		
-		if( ! $this->auth->is_allowed()) {
+
+		if( ! $this->auth->is_allowed())
+		{
 			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
 			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
 		$this->load->view('flash');
 	}
-	
+
 	public function index()
 	{
 		$this->load->library('form_validation');
@@ -22,7 +25,7 @@ class Rate extends CI_Controller {
 		$this->form_validation->set_rules('winner', 'Winner', 'required|numeric');
 		$this->form_validation->set_rules('loser', 'Loser', 'required|numeric');
 
-		if ($this->form_validation->run() == FALSE)
+		if($this->form_validation->run() == FALSE)
 		{
 			show_error('You messed up!');
 		}
@@ -30,11 +33,11 @@ class Rate extends CI_Controller {
 		{
 			$winner = $this->input->post('winner');
 			$loser = $this->input->post('loser');
-			
+
 			$this->load->model('Images_model', 'images');
 			$winner_rating = $this->images->get_rating($winner);
 			$loser_rating = $this->images->get_rating($loser);
-			
+
 			if( ! $winner_rating || ! $loser_rating)
 			{
 				//Id's are unvalid
@@ -45,10 +48,9 @@ class Rate extends CI_Controller {
 			$this->rate->set_winner($winner_rating);
 			$this->rate->set_loser($loser_rating);
 			$this->rate->calc_new_ratings();
-			
+
 			$this->load->model('queue_model', 'queue');
-			
-			
+
 			//Update the new ratings
 			$this->db->trans_start();
 			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
@@ -56,14 +58,16 @@ class Rate extends CI_Controller {
 			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
 			$this->queue->modify($loser, 'C');
 			$this->db->trans_complete();
-			if ($this->db->trans_status() === FALSE) {
+			if($this->db->trans_status() === FALSE)
+			{
 				show_error('Error on updating the image ratings');
 			}
-			
+
 			$this->load->helper('url');
 			redirect('/');
 		}
 	}
+
 }
 
 /* End of file rate.php */

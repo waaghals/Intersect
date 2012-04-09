@@ -1,27 +1,33 @@
 <?php
 class Images_model extends CI_Model {
-	
-	function __construct() {
+
+	function __construct()
+	{
 		// Call the Model constructor
 		parent::__construct();
 		$this->load->helper('path', 'url');
 	}
-	public function best($number) {
+
+	public function best($number)
+	{
 		return $this->images($number, FALSE);
 	}
-	
-	public function worst($numer) {
+
+	public function worst($numer)
+	{
 		return $this->images($number, TRUE);
 	}
-	
-	private function images($number, $worst) {
-		if( ! is_numeric($number)) {
+
+	private function images($number, $worst)
+	{
+		if( ! is_numeric($number))
+		{
 			show_error('Number of images is not a valid number.');
 			return;
 		}
 		//Order asc when worst, desc when best
-		$order = ($worst) ? 'ASC': 'DESC';
-			
+		$order = ($worst) ? 'ASC' : 'DESC';
+
 		$sql = "
 			SELECT 
 				i.id, 
@@ -37,37 +43,42 @@ class Images_model extends CI_Model {
 			ORDER BY rating " . $order . "
 			LIMIT 0 , " . $number;
 
-		$q = $this->db->query($sql);	
-		if ($q->num_rows() > 0)
+		$q = $this->db->query($sql);
+		if($q->num_rows() > 0)
 		{
 			return $q->result_array();
 		}
 		return FALSE;
 	}
-	
-	
-	public function update_quantiles() {
-		//This is a heavy query. The query results are cached. Execution times are over 10 seconds with 20k images.
-		$this->load->driver('cache', array('adapter'=>'file'));    
 
-		if ( ! $quantiles = $this->cache->get('quantiles')) {
+	public function update_quantiles()
+	{
+		//This is a heavy query. The query results are cached. Execution times are over
+		// 10 seconds with 20k images.
+		$this->load->driver('cache', array('adapter' => 'file'));
+
+		if( ! $quantiles = $this->cache->get('quantiles'))
+		{
 			//Try to get the results, hope the user waits long enough.
 			$this->calc_quantiles(10);
-			
+
 			//Don't do this recursively, if the query fails there will be a infinite loop
-			if ( ! $quantiles = $this->cache->get('quantiles')) {
+			if( ! $quantiles = $this->cache->get('quantiles'))
+			{
 				show_error('Could not get query result from cache.');
 				return FALSE;
 			}
- 		}
+		}
 		return $quantiles;
 	}
-	
-	public function random() {
+
+	public function random()
+	{
 		$sql = "SELECT id FROM image";
 		$q = $this->db->query($sql);
 		$rows = $q->result_array();
-		if(count($rows) < 10) {
+		if(count($rows) < 10)
+		{
 			$this->session->set_flashdata('error', 'Not enough images to get a random image. Please upload some extra images.');
 			redirect('/upload');
 		}
@@ -76,18 +87,21 @@ class Images_model extends CI_Model {
 
 		return path_to_image($rand_row['id']) . $rand_row['id'];
 	}
-	
-	public function from_queue() {
+
+	public function from_queue()
+	{
 		$this->load->model('queue_model', 'queue');
-		
-		if( ! $img_id = $this->queue->get()) {
+
+		if( ! $img_id = $this->queue->get())
+		{
 			//Queue is empty, return a random image
 			return $this->random();
 		}
 		return path_to_image($img_id) . $img_id;
 	}
 
-	public function get_rating($id) {
+	public function get_rating($id)
+	{
 		$sql = "
 			SELECT d.width * d.height / 150000 + i.rating AS rating 
 			FROM image AS i
@@ -95,16 +109,18 @@ class Images_model extends CI_Model {
 					ON ( i.id = d.image_id ) 
 			WHERE i.id = ?";
 		$q = $this->db->query($sql, $id);
-		
-		if ($q->num_rows() == 1) {
+
+		if($q->num_rows() == 1)
+		{
 			$row = $q->row();
 			return $row->rating;
 		}
 		return FALSE;
 	}
-	
-	public function calc_quantiles($nth) {
-		
+
+	public function calc_quantiles($nth)
+	{
+
 		//Copyrighted Roland Bouman
 		//http://forge.mysql.com/tools/tool.php?id=149
 		$this->db->query("SET @quantiles:= ?", $nth);
@@ -123,17 +139,21 @@ class Images_model extends CI_Model {
 			           ) 
 			ORDER BY   rating";
 		$q = $this->db->query($sql);
-		$this->load->driver('cache', array('adapter'=>'file'));
-		
-		if ($q->num_rows() > 0) {
-			$ttl = 3600 + 100; //Longer than a hour so the results are always from the cache
+		$this->load->driver('cache', array('adapter' => 'file'));
+
+		if($q->num_rows() > 0)
+		{
+			$ttl = 3600 + 100;
+			//Longer than a hour so the results are always from the cache
 			$this->cache->save('quantiles', $q->result_array(), $ttl);
 			return TRUE;
 		}
-		
+
 		log_message('error', 'Failed to get the quantiles from the database.');
-		//If there arn't enough images there won't be any result. To prevent the login from failing set some bogus data.
-		$this->cache->save('quantiles', array(array('metric' => 1200, 'quantile' => 1, 'N' => 1)), 100);
+		//If there arn't enough images there won't be any result. To prevent the login
+		// from failing set some bogus data.
+		$this->cache->save('quantiles', array( array('metric' => 1200, 'quantile' => 1, 'N' => 1)), 100);
 		return FALSE;
 	}
+
 }
