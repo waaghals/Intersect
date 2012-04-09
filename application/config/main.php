@@ -4,7 +4,7 @@ $config['max_image_size']	= 5242880;
 $config['max_url_size'] 	= 255;
 $config['max_word_length'] 	= 10;
 $config['max_words'] 		= 500;
-$config['img_dir']			= APPPATH . 'images';
+$config['img_dir']			= 'images';
 
 
 /* End of file main.php */
