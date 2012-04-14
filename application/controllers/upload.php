@@ -22,7 +22,10 @@ class Upload extends CI_Controller {
 	{
 		if($this->cache->get('vacuuming') === FALSE)
 		{
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
 			$this->load->view('upload/form');
+			$this->load->view('include/footer');
 		}
 		else
 		{
