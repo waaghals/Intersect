@@ -26,6 +26,7 @@
   </head>
 
   <body data-spy="scroll" data-target=".subnav" data-offset="50">
+  <br /><br /><br />
   <?php if($this->session->flashdata('warning') != ''): ?>
 	<div class="alert warning">
 	  <a class="close" data-dismiss="alert">×</a>
@@ -53,4 +54,3 @@
 	  <strong>Success</strong> <?php echo $this->session->flashdata('success'); ?>
 	</div>
   <?php endif; ?>
-<br /><br /><br />
