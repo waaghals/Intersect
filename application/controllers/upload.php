@@ -16,7 +16,6 @@ class Upload extends CI_Controller {
 			$this->session->keep_flashdata('redirect');
 			redirect('/user/sign_in');
 		}
-		$this->load->view('flash');
 	}
 
 	function index()

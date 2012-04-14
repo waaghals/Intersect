@@ -15,7 +15,6 @@ class Rate extends CI_Controller {
 			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/upload');
 		}
-		$this->load->view('flash');
 	}
 
 	public function index()

@@ -14,7 +14,6 @@ class Versus extends CI_Controller {
 			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
 			redirect('/upload');
 		}
-		$this->load->view('flash');
 	}
 
 	public function index()

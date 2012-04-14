@@ -9,7 +9,6 @@ class User extends CI_Controller {
 		parent::__construct();
 		$this->load->library('auth');
 		$this->load->helper(array('url', 'form'));
-		$this->load->view('flash');
 	}
 
 	public function index()
@@ -30,7 +29,7 @@ class User extends CI_Controller {
 			redirect('/');
 		}
 
-		if($this->input->post('submit') == 'Submit')
+		if($this->input->post('submit'))
 		{
 			//Form submitted
 			$this->load->library('form_validation');
@@ -40,7 +39,11 @@ class User extends CI_Controller {
 
 			if($this->form_validation->run() == FALSE)
 			{
+				$this->load->view('include/header');
+				$this->load->view('include/nav');
 				$this->load->view('user/sign_in_form');
+				$this->load->view('include/footer');
+				
 				$this->session->keep_flashdata('redirect');
 			}
 			else
@@ -56,7 +59,10 @@ class User extends CI_Controller {
 				}
 				else
 				{
+					$this->load->view('include/header');
+					$this->load->view('include/nav');
 					$this->load->view('user/sign_in_form');
+					$this->load->view('include/footer');
 					$this->session->keep_flashdata('redirect');
 				}
 			}
@@ -64,7 +70,10 @@ class User extends CI_Controller {
 		else
 		{
 			//Show the login form
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
 			$this->load->view('user/sign_in_form');
+			$this->load->view('include/footer');
 			$this->session->keep_flashdata('redirect');
 		}
 
@@ -78,7 +87,7 @@ class User extends CI_Controller {
 			redirect('/');
 		}
 
-		if($this->input->post('submit') == 'Submit')
+		if($this->input->post('submit'))
 		{
 			//Form submitted
 			$this->load->library('form_validation');
@@ -102,7 +111,10 @@ class User extends CI_Controller {
 					}
 					else
 					{
+						$this->load->view('include/header');
+						$this->load->view('include/nav');
 						$this->load->view('user/sign_up_form');
+						$this->load->view('include/footer');
 					}
 				}
 				else
@@ -114,7 +126,10 @@ class User extends CI_Controller {
 		else
 		{
 			//Show the login form
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
 			$this->load->view('user/sign_up_form');
+			$this->load->view('include/footer');
 		}
 	}
 
