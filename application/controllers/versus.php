@@ -19,18 +19,23 @@ class Versus extends CI_Controller {
 	public function index()
 	{
 		$this->load->model('Images_model', 'images');
+		
+		//If queue is ampty a random is is taken
 		$data['left'] = $this->images->from_queue();
 		$data['right'] = $this->images->random();
-		$data['left_id'] = array_pop(explode('/', $data['left']));
-		$data['right_id'] = array_pop(explode('/', $data['right']));
 
-		if($data['left_id'] == $data['right_id'])
+		if($data['left'] == $data['right'])
 		{
 			$this->index();
 			return;
 		}
-
+		
+		$this->load->helper('form');
+		
+		$this->load->view('include/header');
+		$this->load->view('include/nav');
 		$this->load->view('versus', $data);
+		$this->load->view('include/footer');
 		return;
 	}
 

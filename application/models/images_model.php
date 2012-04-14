@@ -85,7 +85,7 @@ class Images_model extends CI_Model {
 		$this->load->helper('array');
 		$rand_row = random_element($rows);
 
-		return path_to_image($rand_row['id']) . $rand_row['id'];
+		return $rand_row['id'];
 	}
 
 	public function from_queue()
