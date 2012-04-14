@@ -10,38 +10,18 @@ class Users_model extends CI_Model {
 
 	function get_user_by_id($user_id)
 	{
-		$this->load->driver('cache', array('adapter' => 'file'));
-
-		if( ! $rows = $this->cache->get('quantiles'))
-		{
-			$this->load->model('images_model', 'images');
-			$this->images->calc_quantiles(10);
-
-			//Don't do this recursively, if the query fails there will be a infinite loop
-			if( ! $rows = $this->cache->get('quantiles'))
-			{
-				show_error('Could not get query result from cache.');
-				return FALSE;
-			}
-		}
-		//Only use the first row
-		$quantile = $rows[0]['metric'];
-
-		//If the user has a level above 8 he cannot be auto banned.
-		//Users with level above 5 don't 'expire'
 		$sql = "SELECT 
-					u.id, 
-					name, 
-					IF(level > 5, level, IF(DATEDIFF(expiration,NOW()) > 0, level, 1)) AS level,
-					LOWER(HEX(passhash)) AS passhash, 
-					IF(level > 8, FALSE, IF(AVG(i.rating) < ?, TRUE, FALSE)) AS banned
+					u.id,
+					name,
+					percentile,
+					LOWER(HEX(passhash)) AS passhash,
+					title
 					FROM user AS u
-					JOIN user_image AS ui
-						ON u.id = ui.user_id
-					JOIN image AS i 
-						ON i.id = ui.image_id
+					JOIN view_user_rank AS ur
+						ON(ur.user_id = u.id)
 					WHERE u.id = ?";
-		$query = $this->db->query($sql, array($quantile, $user_id));
+		$query = $this->db->query($sql, $user_id);
+		
 		return $query->row();
 	}
 
@@ -69,7 +49,6 @@ class Users_model extends CI_Model {
 		$this->db->set('passhash', 'UNHEX(\'' . $passhash . '\')', FALSE);
 		$this->db->set('name', $username);
 		$this->db->set('created', date('Y-m-d H:i:s'));
-		$this->db->set('expiration', date('Y-m-d H:i:s'));
 		if($this->db->insert('user'))
 		{
 			//Return the user_id
@@ -98,14 +77,19 @@ class Users_model extends CI_Model {
 		return $this->db->affected_rows() > 0;
 	}
 
-	function add_time($interval)
+	function add_karma($user_id, $amount)
 	{
-		$column = "IF(expiration >= NOW(),
-					DATE_ADD(expiration, INTERVAL " . $interval . "),
-					DATE_ADD(NOW(), INTERVAL " . $interval . "))";
-		$this->db->set('expiration', $column, FALSE);
-		$this->db->where('id', $this->auth->get_user_id(), FALSE);
-		$this->db->update('user');
+		$data = array(
+			'user_id' => $user_id,
+			'karma' => $amount,
+			'given' => date('Y-m-d H:i:s')
+		);
+		
+		if($this->db->insert('karma', $data))
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 }

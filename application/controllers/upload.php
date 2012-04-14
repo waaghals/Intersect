@@ -55,7 +55,9 @@ class Upload extends CI_Controller {
 
 				//Update the user expire time by 24 hours
 				$this->load->model('users_model', 'users');
-				$this->users->add_time('24 HOUR');
+				$this->config->load('karma');
+				$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
+				
 				$this->session->set_flashdata('success', 'Image uploaded');
 				if($redirect = $this->session->flashdata('redirect'))
 				{

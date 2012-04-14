@@ -17,18 +17,11 @@ class Auth {
 		{
 			if(sha1($password) == $user->passhash)
 			{
-				if($user->banned)
-				{
-					show_error('You are banned.');
-					return FALSE;
-				}
-				else
-				{
-					$this->ci->session->set_userdata(array('user_id' => $user->id, 'username' => $user->name, 'level' => $user->level));
-					return TRUE;
-				}
+				$this->ci->session->set_userdata(array('user_id' => $user->id, 'username' => $user->name, 'percentile' => $user->percentile));
+				return TRUE;
 			}
 		}
+		var_dump($user); exit;
 		show_error('Username of password is incorrect.');
 		return FALSE;
 	}
@@ -37,29 +30,39 @@ class Auth {
 	{
 		// See http://codeigniter.com/forums/viewreply/662369/ as the reason for the next
 		// line
-		$this->ci->session->set_userdata(array('user_id' => '', 'username' => '', 'level' => ''));
+		$this->ci->session->set_userdata(array('user_id' => '', 'username' => '', 'percentile' => ''));
 
 		$this->ci->session->sess_destroy();
 	}
 
 	function is_logged_in()
 	{
-		return $this->ci->session->userdata('level') > 0;
+		return $this->ci->session->userdata('user_id') > 0;
 	}
-
+	
+	function is_banned()
+	{
+		//Rank above private
+		return $this->ci->session->userdata('percentile') < 2;
+	}
+	
 	function is_allowed()
 	{
-		return $this->ci->session->userdata('level') >= 1;
+		//Rank above private
+		return $this->ci->session->userdata('percentile') > 2;
 	}
 
 	function is_mod()
 	{
-		return $this->ci->session->userdata('level') > 4;
+		//Above Colonel is moderator
+		return $this->ci->session->userdata('percentile') > 85;
 	}
 
+	
 	function is_admin()
 	{
-		return $this->ci->session->userdata('level') > 8;
+		//Only generals are admins
+		return $this->ci->session->userdata('percentile') > 99;
 	}
 
 	function get_user_id()
