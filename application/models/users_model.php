@@ -18,8 +18,8 @@ class Users_model extends CI_Model {
 					LOWER(HEX(passhash)) AS passhash,
 					title
 					FROM user AS u
-					JOIN view_user_rank AS ur
-						ON(ur.user_id = u.id)
+					JOIN user_data AS ud
+						ON(ud.user_id = u.id)
 					WHERE u.id = ?";
 		$query = $this->db->query($sql, $user_id);
 		if($query->num_rows() == 1)
@@ -57,7 +57,7 @@ class Users_model extends CI_Model {
 		{
 			$user_id = $this->db->insert_id();
 			
-			$this->add_karma->($user_id, 100);
+			$this->add_karma($user_id, 100);
 			return $user_id;
 		}
 		return FALSE;

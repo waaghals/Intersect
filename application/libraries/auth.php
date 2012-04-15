@@ -19,7 +19,7 @@ class Auth {
 			if(sha1($password) == $user['passhash'])
 			{
 				$this->ci->session->set_userdata(array('user_id' => $user['id'], 'username' => $user['name'], 'percentile' => $user['percentile']));
-				$this->session->set_flashdata('success', 'Login successfull');
+				$this->ci->session->set_flashdata('success', 'Login successfull');
 				return TRUE;
 			}
 		}

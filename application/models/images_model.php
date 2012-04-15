@@ -71,6 +71,32 @@ class Images_model extends CI_Model {
 		}
 		return $quantiles;
 	}
+	
+	public function get_data($img_id)
+	{
+		$sql = "SELECT 
+					i.id, 
+					d.width * d.height / 150000 + i.rating AS rating, 
+					uploaded,
+					u.name AS username,
+					title
+				FROM image i
+				JOIN image_data d 
+					ON i.id = d.image_id
+				JOIN user_image ui
+					ON ui.image_id = i.id
+				JOIN user u
+					ON ui.user_id = u.id
+				JOIN user_data ud
+					ON ud.user_id = u.id
+				WHERE i.id = ?";
+		$q = $this->db->query($sql, $img_id);
+		if($q->num_rows() == 1)
+		{
+			return $q->row_array();
+		}
+		return FALSE;
+	}
 
 	public function random()
 	{
@@ -97,7 +123,7 @@ class Images_model extends CI_Model {
 			//Queue is empty, return a random image
 			return $this->random();
 		}
-		return path_to_image($img_id) . $img_id;
+		return $img_id;
 	}
 
 	public function get_rating($id)

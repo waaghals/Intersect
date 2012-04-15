@@ -21,10 +21,10 @@ class Versus extends CI_Controller {
 		$this->load->model('Images_model', 'images');
 		
 		//If queue is ampty a random is is taken
-		$data['left'] = $this->images->from_queue();
-		$data['right'] = $this->images->random();
+		$data['left'] = $this->images->get_data($this->images->from_queue());
+		$data['right'] = $this->images->get_data($this->images->random());
 
-		if($data['left'] == $data['right'])
+		if($data['left']['id'] == $data['right']['id'])
 		{
 			$this->index();
 			return;
@@ -38,7 +38,6 @@ class Versus extends CI_Controller {
 		$this->load->view('include/footer');
 		return;
 	}
-
 }
 
 /* End of file image.php */
