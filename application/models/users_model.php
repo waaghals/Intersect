@@ -115,7 +115,7 @@ class Users_model extends CI_Model {
 				JOIN vw_karma_concat AS kc
 				ORDER BY user_id, r.above_percentile DESC) AS t 
 				GROUP BY user_id)
-				ON DUPLICATE KEY UPDATE title=values(title), percentile=values(percentile), karma=values(karma), rand=values(rank)";
+				ON DUPLICATE KEY UPDATE title=values(title), percentile=values(percentile), karma=values(karma), rank=values(rank)";
 		return $this->db->query($sql);
 	}
 

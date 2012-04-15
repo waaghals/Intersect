@@ -13,7 +13,7 @@ class Cron extends CI_Controller {
 	{
 		$this->load->model('users_model', 'users');
 		echo "Updating user data table: ";
-		if($this->users->update_user_data_table())
+		if($this->users->update_data_table())
 		{
 			echo "Success\n";
 		}
