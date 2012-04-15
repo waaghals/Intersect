@@ -12,16 +12,16 @@
           <div class="nav-collapse">
             <ul class="nav">
               <li class="">
-                <a href="./index.html">Rate</a>
+                <a href="/">Rate</a>
               </li>
               <li class="">
-                <a href="./scaffolding.html">Upload</a>
+                <a href="/upload">Upload</a>
               </li>
               <li class="">
-                <a href="./base-css.html">About</a>
+                <a href="/view/top/100">Top 100</a>
               </li>
               <li class="">
-                <a href="./components.html">Users</a>
+                <a href="/user/list">Users</a>
               </li>
             </ul>
           </div>
