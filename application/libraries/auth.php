@@ -13,17 +13,19 @@ class Auth {
 
 	function login($username, $password)
 	{
+		
 		if($user = $this->ci->users->get_user_by_name($username))
 		{
-			if(sha1($password) == $user->passhash)
+			if(sha1($password) == $user['passhash'])
 			{
-				$this->ci->session->set_userdata(array('user_id' => $user->id, 'username' => $user->name, 'percentile' => $user->percentile));
+				$this->ci->session->set_userdata(array('user_id' => $user['id'], 'username' => $user['name'], 'percentile' => $user['percentile']));
+				$this->session->set_flashdata('success', 'Login successfull');
 				return TRUE;
 			}
 		}
-		var_dump($user); exit;
-		show_error('Username of password is incorrect.');
-		return FALSE;
+		$this->session->set_flashdata('error', 'Username or password incorrect.');
+		$this->load->helper('url');
+		redirect('/user/sign_in');
 	}
 
 	function logout()

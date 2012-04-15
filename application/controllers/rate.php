@@ -61,7 +61,11 @@ class Rate extends CI_Controller {
 			{
 				show_error('Error on updating the image ratings');
 			}
-
+			
+			$this->load->model('users_model', 'users');
+			$this->config->load('karma');
+			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('rate_karma'));
+			
 			$this->load->helper('url');
 			redirect('/');
 		}

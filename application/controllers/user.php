@@ -50,7 +50,10 @@ class User extends CI_Controller {
 			{
 				if($this->auth->login($this->input->post('username'), $this->input->post('password')))
 				{
-					$this->session->set_flashdata('success', 'Login successfull');
+					$this->load->model('users_model', 'users');
+					$this->config->load('karma');
+					$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('sign_in_karma'));
+					
 					if($redirect = $this->session->flashdata('redirect'))
 					{
 						redirect($redirect);
@@ -139,7 +142,6 @@ class User extends CI_Controller {
 		$this->session->set_flashdata('notice', 'Logged out');
 		redirect('/');
 	}
-
 }
 
 /* End of file user.php */
