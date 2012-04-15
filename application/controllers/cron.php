@@ -9,6 +9,20 @@ class Cron extends CI_Controller {
 		parent::__construct();
 	}
 
+	public function one()
+	{
+		$this->load->model('users_model', 'users');
+		echo "Updating user data table: ";
+		if($this->users->update_user_data_table())
+		{
+			echo "Success\n";
+		}
+		else
+		{
+			echo "Failed \n";
+		}
+	}
+
 	public function five()
 	{
 		$this->load->driver('cache', array('adapter' => 'file'));
