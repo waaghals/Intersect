@@ -79,7 +79,8 @@ class Images_model extends CI_Model {
 					d.width * d.height / 150000 + i.rating AS rating, 
 					uploaded,
 					u.name AS username,
-					title
+					title,
+					GROUP_CONCAT(tag) AS tags
 				FROM image i
 				JOIN image_data d 
 					ON i.id = d.image_id
@@ -89,7 +90,12 @@ class Images_model extends CI_Model {
 					ON ui.user_id = u.id
 				JOIN user_data ud
 					ON ud.user_id = u.id
-				WHERE i.id = ?";
+				LEFT JOIN image_tag_map itm
+					ON i.id = itm.image_id
+				LEFT JOIN tag t
+					ON t.id = itm.tag_id
+				WHERE i.id = ?
+				GROUP BY i.id";
 		$q = $this->db->query($sql, $img_id);
 		if($q->num_rows() == 1)
 		{
@@ -180,6 +186,28 @@ class Images_model extends CI_Model {
 		// from failing set some bogus data.
 		$this->cache->save('quantiles', array( array('metric' => 1200, 'quantile' => 1, 'N' => 1)), 100);
 		return FALSE;
+	}
+	
+	public function add_tag($img_id, $tag)
+	{
+		$sql = 'SELECT id FROM tag WHERE tag = ?';
+		$query = $this->db->query($sql, $tag);
+		
+		if($query->num_rows() == 1)
+		{
+			$row = $query->row_array(); 
+			$tag_id = $row['id'];
+			 
+		}
+		else
+		{
+			$sql = 'INSERT INTO tag (tag) VALUES (?)';
+			$query = $this->db->query($sql, $tag);
+			$tag_id = $this->db->insert_id();
+		}
+		
+		$sql = 'INSERT INTO image_tag_map (image_id, tag_id) VALUES (?, ?)';
+		return $this->db->query($sql, array($img_id, $tag_id));
 	}
 
 }

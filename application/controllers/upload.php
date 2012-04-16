@@ -50,16 +50,26 @@ class Upload extends CI_Controller {
 				$this->load->model('process_model', 'process');
 
 				//Try and process the file; insert in to database and move the uploaded file
-				if( ! $this->process->image($this->upload->data()))
+				$image_id = $this->process->image($this->upload->data());
+				if( ! $image_id)
 				{
 					show_error('Something went wrong, please try again.');
 				}
-
-				//Update the user expire time by 24 hours
+				
+				//Add the tags
+				$tags = explode(',', $this->input->post('tags'));
+				$this->load->model('images_model', 'images');
+				foreach($tags as $tag)
+				{
+					$this->images->add_tag($image_id, $tag);
+				}
+				
+				//Add the karma
 				$this->load->model('users_model', 'users');
 				$this->config->load('karma');
 				$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
 				
+				//Redirect the user back
 				$this->session->set_flashdata('success', 'Image uploaded');
 				if($redirect = $this->session->flashdata('redirect'))
 				{

@@ -53,7 +53,7 @@ class Process_model extends CI_Model {
 		else
 		{
 			$this->db->trans_commit();
-			return TRUE;
+			return $this->image_id;
 		}
 	}
 
@@ -175,5 +175,4 @@ class Process_model extends CI_Model {
 		unlink($file);
 		return TRUE;
 	}
-
 }
