@@ -11,7 +11,7 @@ class Auth {
 		$this->ci->load->model('users_model', 'users');
 	}
 
-	function login($username, $password)
+	function sign_in($username, $password)
 	{
 
 		if($user = $this->ci->users->get_user_by_name($username))
@@ -19,7 +19,7 @@ class Auth {
 			if(sha1($password) == $user['passhash'])
 			{
 				$this->ci->session->set_userdata(array('user_id' => $user['id'], 'username' => $user['name'], 'percentile' => $user['percentile']));
-				$this->ci->session->set_flashdata('success', 'Login successfull');
+				$this->ci->session->set_flashdata('success', 'Sign in successfull');
 				return TRUE;
 			}
 		}
@@ -28,7 +28,7 @@ class Auth {
 		redirect('/user/sign_in');
 	}
 
-	function logout()
+	function sign_out()
 	{
 		// See http://codeigniter.com/forums/viewreply/662369/ as the reason for the next
 		// line
@@ -119,7 +119,7 @@ class Auth {
 			if(sha1($password) == $user->passhash)
 			{
 				$this->ci->users->delete_user($user_id);
-				$this->logout();
+				$this->sign_out();
 				return TRUE;
 			}
 			show_error('Password is incorrect, account NOT deleted');

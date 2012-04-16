@@ -48,7 +48,7 @@ class User extends CI_Controller {
 			}
 			else
 			{
-				if($this->auth->login($this->input->post('username'), $this->input->post('password')))
+				if($this->auth->sign_in($this->input->post('username'), $this->input->post('password')))
 				{
 					$this->load->model('users_model', 'users');
 					$this->config->load('karma');
@@ -72,7 +72,7 @@ class User extends CI_Controller {
 		}
 		else
 		{
-			//Show the login form
+			//Show the sign in form
 			$this->load->view('include/header');
 			$this->load->view('include/nav');
 			$this->load->view('user/sign_in_form');
@@ -127,7 +127,7 @@ class User extends CI_Controller {
 		}
 		else
 		{
-			//Show the login form
+			//Show the sign in form
 			$this->load->view('include/header');
 			$this->load->view('include/nav');
 			$this->load->view('user/sign_up_form');
@@ -135,9 +135,9 @@ class User extends CI_Controller {
 		}
 	}
 
-	public function logout()
+	public function sign_out()
 	{
-		$this->auth->logout();
+		$this->auth->sign_out();
 		$this->session->set_flashdata('notice', 'Logged out');
 		redirect('/');
 	}
