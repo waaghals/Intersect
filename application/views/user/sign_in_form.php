@@ -18,7 +18,7 @@
     </div>
     
     <div class="form-actions">
-	<input type="submit" class="btn btn-primary" value="Sign In" name="submit" /> <a href="/user/sign_in">I don't have an account</a>
+	<input type="submit" class="btn btn-primary" value="Sign In" name="submit" /> <a href="/user/sign_up">I don't have an account</a>
 	</div>
   </fieldset>
 </form>

@@ -41,13 +41,6 @@ class Users_model extends CI_Model {
 		return FALSE;
 	}
 
-	function is_username_available($username)
-	{
-		$sql = "SELECT 1 FROM user WHERE name = ?";
-		$query = $this->db->query($sql, $username);
-		return $query->num_rows() == 0;
-	}
-
 	function create_user($username, $passhash)
 	{
 		$this->db->set('passhash', 'UNHEX(\'' . $passhash . '\')', FALSE);

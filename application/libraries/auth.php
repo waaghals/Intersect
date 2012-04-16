@@ -13,7 +13,7 @@ class Auth {
 
 	function login($username, $password)
 	{
-		
+
 		if($user = $this->ci->users->get_user_by_name($username))
 		{
 			if(sha1($password) == $user['passhash'])
@@ -41,17 +41,23 @@ class Auth {
 	{
 		return $this->ci->session->userdata('user_id') > 0;
 	}
-	
+
 	function is_banned()
 	{
 		//Rank above private
 		return $this->ci->session->userdata('percentile') < 2;
 	}
-	
+
 	function is_allowed()
 	{
 		//Rank above private
 		return $this->ci->session->userdata('percentile') > 2;
+	}
+
+	function is_autoconfirmed()
+	{
+		//Above Sergeant is autoconfirmed
+		return $this->ci->session->userdata('percentile') > 34;
 	}
 
 	function is_mod()
@@ -60,7 +66,6 @@ class Auth {
 		return $this->ci->session->userdata('percentile') > 85;
 	}
 
-	
 	function is_admin()
 	{
 		//Only generals are admins
@@ -79,26 +84,14 @@ class Auth {
 
 	function create_user($username, $password)
 	{
-		if( ! $this->is_username_valid($username))
+		$user_id = $this->ci->users->create_user($username, sha1($password));
+		if( ! $user_id)
 		{
-			show_error('Username already taken');
+			show_error('Could not create user, Database error');
 			return FALSE;
 		}
-		else
-		{
-			$user_id = $this->ci->users->create_user($username, sha1($password));
-			if( ! $user_id)
-			{
-				show_error('Could not create user, Database error');
-				return FALSE;
-			}
-			return $user_id;
-		}
-	}
+		return $user_id;
 
-	function is_username_valid($username)
-	{
-		return ((strlen($username) > 0) AND $this->ci->users->is_username_available($username));
 	}
 
 	function change_password($old_pass, $new_pass)
