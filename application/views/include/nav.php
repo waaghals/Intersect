@@ -11,6 +11,7 @@
           <a class="brand" href="/">Intersect</a>
           <div class="nav-collapse">
             <ul class="nav">
+             <?php if($this->auth->is_logged_in()): ?>
               <li class="">
                 <a href="/">Rate</a>
               </li>
@@ -20,9 +21,29 @@
               <li class="">
                 <a href="/view/top/100">Top 100</a>
               </li>
+              <?php if($this->auth->is_autoconfirmed()): ?>
+              <li class="">
+                <a href="/user/invite">Invite Others</a>
+              </li>
+              <?php endif; ?>
               <li class="">
                 <a href="/user/table">Users</a>
               </li>
+             <?php endif; ?>
+            </ul>
+            <ul class="nav pull-right">
+              <?php if($this->auth->is_logged_in()): ?>
+              <li class="">
+                <a href="/user/sign_out">Sign Out</a>
+              </li>
+              <?php else: ?>
+              <li class="">
+                <a href="/user/sign_in">Sign In</a>
+              </li>
+              <li class="">
+                <a href="/user/sign_up">Sign Up</a>
+              </li>
+              <?php endif; ?>
             </ul>
           </div>
         </div>
