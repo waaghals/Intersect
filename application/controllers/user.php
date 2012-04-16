@@ -143,7 +143,7 @@ class User extends CI_Controller {
 		redirect('/');
 	}
 	
-	public function table($orderby)
+	public function table($orderby = 'rank')
 	{
 		$this->load->library('table');
 		$this->table->set_template(array('table_open' => '<table class="table">'));
