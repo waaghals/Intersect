@@ -142,6 +142,24 @@ class User extends CI_Controller {
 		$this->session->set_flashdata('notice', 'Logged out');
 		redirect('/');
 	}
+	
+	public function table($orderby)
+	{
+		$this->load->library('table');
+		$this->table->set_template(array('table_open' => '<table class="table">'));
+		
+		$this->load->model('users_model', 'users');
+		$query = $this->users->user_data($orderby);
+		
+		$this->table->set_heading('<a href="/user/table/user_id">Id</a>', '<a href="/user/table/title">Title</a>', '<a href="/user/table/name">Name</a>', '<a href="/user/table/karma">Karma</a>', '<a href="/user/table/rank">Rank</a>');
+		$data['table'] = $this->table->generate($query);
+		
+		$this->load->view('include/header');
+		$this->load->view('include/nav');
+		$this->load->view('user/table', $data);
+		$this->load->view('include/footer');
+		
+	}
 }
 
 /* End of file user.php */

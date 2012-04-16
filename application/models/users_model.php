@@ -118,6 +118,22 @@ class Users_model extends CI_Model {
 				ON DUPLICATE KEY UPDATE title=values(title), percentile=values(percentile), karma=values(karma), rank=values(rank)";
 		return $this->db->query($sql);
 	}
+	
+	public function user_data($orderby = 'rank')
+	{
+		if( ! in_array($orderby, array('user_id', 'name', 'title', 'karma', 'rank')))
+		{
+			show_error('Not a valid column for order by');
+		}
+
+		$sql = "SELECT user_id, title, name, karma, rank FROM user_data JOIN user ON user.id = user_data.user_id ORDER BY " . $orderby;
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0)
+		{
+			return $query;
+		}
+		return FALSE;
+	}
 
 }
 
