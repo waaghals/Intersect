@@ -9,7 +9,7 @@
 <ul class="thumbnails">
 	<li class="span3">
 		<div class="thumbnail">
-			<img id="preview" src="http://placehold.it/260x180" alt="Your image"/>
+			<img id="preview" src="http://placehold.it/260x180&text=Image+preview" alt="Your image"/>
 			<div class="caption">
 				<div class="control-group">
 					<label class="control-label" for="tags">Tags</label>
