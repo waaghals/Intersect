@@ -61,8 +61,19 @@ class Process_model extends CI_Model {
 	{
 		$exif = $this->exif($upload_data['full_path']);
 
-		$data = array('image_id' => $this->image_id, 'lat' => $exif['lat'], 'lng' => $exif['lng'], 'width' => $upload_data['image_width'], 'height' => $upload_data['image_height'], 'make' => $exif['make'], 'model' => $exif['model'], 'created' => $exif['created'], 'mime' => $upload_data['file_type'], 'size' => $upload_data['file_size']);
+		$data = array('image_id' => $this->image_id, 'lat' => $exif['lat'], 'lng' => $exif['lng'], 'width' => $upload_data['image_width'], 'height' => $upload_data['image_height'], 'created' => $exif['created'], 'mime' => $upload_data['file_type'], 'size' => $upload_data['file_size']);
 		$this->db->insert('image_data', $data);
+		
+		$this->load->model('images_model', 'image');
+		if($exif['make'])
+		{
+			$this->image->add_tag($this->image_id, $exif['make']);
+		}
+		
+		if($exif['model'])
+		{
+			$this->image->add_tag($this->image_id, $exif['model']);
+		}
 	}
 
 	private function exif($file)
@@ -80,7 +91,7 @@ class Process_model extends CI_Model {
 			}
 			else
 			{
-				$return['make'] = NULL;
+				$return['make'] = FALSE;
 			}
 
 			// Model
@@ -90,7 +101,7 @@ class Process_model extends CI_Model {
 			}
 			else
 			{
-				$return['model'] = NULL;
+				$return['model'] = FALSE;
 			}
 
 			// Date
@@ -107,6 +118,7 @@ class Process_model extends CI_Model {
 
 			$return['lat'] = $geo['lat'];
 			$return['lng'] = $geo['lng'];
+			return $return;
 		}
 	}
 
