@@ -13,19 +13,20 @@ class Process_model extends CI_Model {
 			return FALSE;
 		}
 
-		//Calculate the cvec
-		$cvec = puzzle_fill_cvec_from_file($upload_data['full_path']);
-		if(empty($cvec))
-		{
-			show_error('Unable to compute image signature');
-			unlink($upload_data['full_path']);
-			return FALSE;
-		}
-
-		$this->load->model('signature_model', 'signature');
 		//Insert everything in the database
 		$this->db->trans_begin();
-		$this->image_id = $this->signature->save($hash, $cvec);
+		$sql = "SELECT id FROM image WHERE LOWER(HEX(hash)) = ?";
+		$query = $this->db->query($sql, $hash);
+		if($query->num_rows() > 0)
+		{
+			show_error('Duplicate image, please upload an other image.');
+		}
+
+		//No duplicate found
+		$this->db->set('hash', 'UNHEX(\'' . $hash . '\')', FALSE);
+		$this->db->set('uploaded', date("Y-m-d H:i:s"));
+		$this->db->insert('image');
+		$this->image_id = $this->db->insert_id();
 		$this->store_data($upload_data);
 
 		//Try to move the uploaded file
