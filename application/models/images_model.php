@@ -209,6 +209,11 @@ class Images_model extends CI_Model {
 		}
 		else
 		{
+			if( ! $this->auth->is_autoconfirmed())
+			{
+				//When a user is not autoconfirmed he is considerd as new to the site. He could add 'wrong' tags
+				return;
+			}
 			$sql = 'INSERT INTO tag (tag) VALUES (?)';
 			$query = $this->db->query($sql, $tag);
 			$tag_id = $this->db->insert_id();
