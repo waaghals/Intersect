@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>The intersect</title>
+    <title><?php if(isset($title)): echo $title; else: ?>The intersect<? endif; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Finding, rating, matching and tagging a large set of images">
     <meta name="author" content="Waaghals">
