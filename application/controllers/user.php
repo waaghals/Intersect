@@ -122,7 +122,7 @@ class User extends CI_Controller {
 					$this->session->set_flashdata('success', 'Account created, ' . $inviter . ' welcomes you!');
 					redirect('/user/sign_in');
 				}
-				
+
 			}
 		}
 		else
@@ -159,13 +159,13 @@ class User extends CI_Controller {
 		$this->load->view('include/footer');
 
 	}
-	
+
 	public function profile($username = FALSE)
 	{
 		$this->load->model('users_model', 'user');
 		$this->load->library('markdown');
 		$this->load->helper(array('date', 'inflector'));
-		
+
 		if( ! $username)
 		{
 			$user = $this->user->get_user_by_id($this->session->userdata('user_id'));
@@ -182,36 +182,25 @@ class User extends CI_Controller {
 Hello I'm {username} and I am here for over {timeframe}.
 MARKDOWN;
 		}
-		
+
 		$html = $this->markdown->transform($markdown_source);
-		
-		$vars = array(
-					'{username}',
-					'{title}',
-					'{timeframe}',
-					'{since}',
-					'{user_id}',
-					'{karma}',
-					'{rankth}',
-					'{rank}');
-		
-		$values = array(
-					ucfirst($user['name']),
-					$user['title'],
-					timeframe($user['created']),
-					$user['created'],
-					$user['id'],
-					$user['karma'],
-					ordinal_suffix($user['rank']),
-					$user['rank']);
+
+		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{user_id}', '{karma}', '{rankth}', '{rank}');
+
+		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank']);
 		$html = str_replace($vars, $values, $html);
-		
+
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
 		$this->load->view('echo', array('echo_this' => $html));
+		if($this->session->userdata('user_id') == $user['id'])
+		{
+			$this->load->view('user/modify-profile-button');
+		}
 		$this->load->view('include/footer');
-	
+
 	}
+
 	public function invite()
 	{
 		if( ! $this->auth->is_autoconfirmed())
@@ -235,6 +224,65 @@ MARKDOWN;
 		$this->load->view('include/footer');
 	}
 
+	public function modify($section = FALSE)
+	{
+		if( ! $this->auth->is_logged_in())
+		{
+			$this->session->set_flashdata('warning', 'You are not logged in.');
+			redirect('/user/sign_in');
+		}
+		$user_id = $this->session->userdata('user_id');
+		$this->load->model('users_model', 'user');
+		$data['markdown'] = $this->user->profile($user_id);
+
+		if( ! $section)
+		{
+			//Show the form to the user
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
+			$this->load->view('user/modify-profile', $data);
+			$this->load->view('include/footer');
+		}
+		elseif($section == 'password')
+		{
+			$this->load->library('form_validation');
+			$this->form_validation->set_rules('passconf', 'Password confirmation', 'matches[passnew]');
+			if($this->form_validation->run() == FALSE)
+			{
+				//Show the form again
+				$this->load->view('include/header');
+				$this->load->view('include/nav');
+				$this->load->view('user/modify-profile', $data);
+				$this->load->view('include/footer');
+			}
+			else
+			{
+				$user = $this->user->get_user_by_id($user_id);
+				if($user['passhash'] == sha1($this->input->post('password')))
+				{
+					//Insert the new password in the database
+					$this->user->change_password($user_id, sha1($this->input->post('passnew')));
+					$this->session->set_flashdata('success', 'New password has been set');
+					redirect('/user/modify');
+				}
+				$this->session->set_flashdata('error', 'Wrong password');
+				redirect('/user/modify');
+				
+			}
+		}
+		elseif($section == 'profile')
+		{
+			if(trim($this->input->post('markdown')) != '')
+			{
+				//Update the user profile
+				$this->user->change_profile($user_id, $this->input->post('markdown'));
+				$this->session->set_flashdata('success', 'Profile updated');
+				redirect('/user/profile');
+			}
+			$this->session->set_flashdata('warning', 'Your profile can\'t be empty');
+			redirect('/user/modify');
+		}
+	}
 }
 
 /* End of file user.php */

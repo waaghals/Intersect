@@ -78,3 +78,11 @@
 	  <strong>Success</strong> <?php echo $this->session->flashdata('success');?>
 	</div>
   <?php endif;?>
+  
+  <?php if(validation_errors() != ''): ?>
+	<div class="alert alert-warning">
+	  <a class="close" data-dismiss="alert">×</a>
+	  <strong>Success</strong> <?php echo validation_errors();?>
+	</div>
+  <?php endif;?>
+

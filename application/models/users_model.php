@@ -72,10 +72,19 @@ class Users_model extends CI_Model {
 
 	function change_password($user_id, $passhash)
 	{
-		$this->db->set('password', $passhash);
+		$this->db->set('passhash', 'UNHEX(\'' . $passhash . '\')', FALSE);
 		$this->db->where('id', $user_id);
 
 		$this->db->update('user');
+		return $this->db->affected_rows() > 0;
+	}
+	
+	function change_profile($user_id, $markdown)
+	{
+		$this->db->set('profile', $markdown);
+		$this->db->where('user_id', $user_id);
+
+		$this->db->update('user_profile');
 		return $this->db->affected_rows() > 0;
 	}
 
