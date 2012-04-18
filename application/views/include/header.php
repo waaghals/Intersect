@@ -8,7 +8,7 @@
     <meta name="author" content="Waaghals">
 
     <!-- Le styles -->
-    <link href="/assets/css/cerulean.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
 
