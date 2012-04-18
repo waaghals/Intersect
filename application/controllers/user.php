@@ -164,15 +164,18 @@ class User extends CI_Controller {
 	{
 		$this->load->model('users_model', 'user');
 		$this->load->library('markdown');
-		$this->load->helper(array('date', 'inflector'));
-
+		$this->load->helper(array('date', 'inflector', 'number'));
+		
+		$user_id = $this->session->userdata('user_id');
 		if( ! $username)
 		{
-			$user = $this->user->get_user_by_id($this->session->userdata('user_id'));
+			$user = $this->user->get_user_by_id($user_id);
+			$img = $this->user->get_user_images_info($user_id);
 		}
 		else
 		{
 			$user = $this->user->get_user_by_name($username);
+			$img = $this->user->get_user_images_info($user['id']);
 		}
 
 		if( ! $markdown_source = $this->user->profile($user['id']))
@@ -185,15 +188,38 @@ MARKDOWN;
 
 		$html = $this->markdown->transform($markdown_source);
 
-		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{user_id}', '{karma}', '{rankth}', '{rank}');
+		$vars = array(
+					'{username}', 
+					'{title}', 
+					'{timeframe}', 
+					'{since}', 
+					'{user_id}', 
+					'{karma}', 
+					'{rankth}', 
+					'{rank}', 
+					'{img_count}', 
+					'{img_size}',
+					'{img_rating}');
 
-		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank']);
+		$values = array(
+					ucfirst($user['name']), 
+					$user['title'], 
+					timeframe($user['created']), 
+					$user['created'], 
+					$user['id'], 
+					$user['karma'], 
+					ordinal_suffix($user['rank']), 
+					$user['rank'], 
+					$img['img_count'],
+					byte_format($img['img_size']),
+					round($img['rating']));
+					
 		$html = str_replace($vars, $values, $html);
 
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
 		$this->load->view('echo', array('echo_this' => $html));
-		if($this->session->userdata('user_id') == $user['id'])
+		if($user_id == $user['id'])
 		{
 			$this->load->view('user/modify-profile-button');
 		}

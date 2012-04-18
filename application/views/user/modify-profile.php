@@ -64,6 +64,9 @@
 			<li><em>{timeframe}</em><br />Relative date when you signed up, does not include 'ago'</li>
 			<li><em>{since}</em><br />Date and time from when you signed up</li>
 			<li><em>{karma}</em></li>
+			<li><em>{img_count}</em></li>
+			<li><em>{img_size}</em><br />Total size of images on the server</li>
+			<li><em>{img_rating}</em><br />Average rating of your images</li>
 		</ul>
 		<hr>
 		<h3>Markdown</h3>

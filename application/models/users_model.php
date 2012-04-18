@@ -43,6 +43,26 @@ class Users_model extends CI_Model {
 		}
 		return FALSE;
 	}
+	
+	function get_user_images_info($user_id)
+	{
+		$sql = "SELECT 
+					COUNT(id.image_id) AS img_count,
+					SUM(id.size)*1024 AS img_size,
+					AVG(rating) AS rating
+					FROM image_data AS id
+					JOIN image AS i
+						ON(i.id = id.image_id)
+					JOIN user_image AS ui
+						ON(ui.image_id = id.image_id)
+					WHERE ui.user_id= ?";
+		$query = $this->db->query($sql, $user_id);
+		if($query->num_rows() == 1)
+		{
+			return $query->row_array();
+		}
+		return FALSE;
+	}
 
 	function create_user($username, $passhash)
 	{
