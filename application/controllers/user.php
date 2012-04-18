@@ -159,7 +159,59 @@ class User extends CI_Controller {
 		$this->load->view('include/footer');
 
 	}
+	
+	public function profile($username = FALSE)
+	{
+		$this->load->model('users_model', 'user');
+		$this->load->library('markdown');
+		$this->load->helper(array('date', 'inflector'));
+		
+		if( ! $username)
+		{
+			$user = $this->user->get_user_by_id($this->session->userdata('user_id'));
+		}
+		else
+		{
+			$user = $this->user->get_user_by_name($username);
+		}
 
+		if( ! $markdown_source = $this->user->profile($user['id']))
+		{
+			$markdown_source = <<<MARKDOWN
+#_{title}_ {username}
+Hello I'm {username} and I am here for over {timeframe}.
+MARKDOWN;
+		}
+		
+		$html = $this->markdown->transform($markdown_source);
+		
+		$vars = array(
+					'{username}',
+					'{title}',
+					'{timeframe}',
+					'{since}',
+					'{user_id}',
+					'{karma}',
+					'{rankth}',
+					'{rank}');
+		
+		$values = array(
+					ucfirst($user['name']),
+					$user['title'],
+					timeframe($user['created']),
+					$user['created'],
+					$user['id'],
+					$user['karma'],
+					ordinal_suffix($user['rank']),
+					$user['rank']);
+		$html = str_replace($vars, $values, $html);
+		
+		$this->load->view('include/header');
+		$this->load->view('include/nav');
+		$this->load->view('echo', array('echo_this' => $html));
+		$this->load->view('include/footer');
+	
+	}
 	public function invite()
 	{
 		if( ! $this->auth->is_autoconfirmed())

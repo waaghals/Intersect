@@ -16,7 +16,10 @@ class Users_model extends CI_Model {
 					name,
 					percentile,
 					LOWER(HEX(passhash)) AS passhash,
-					title
+					title,
+					created,
+					karma,
+					rank
 					FROM user AS u
 					JOIN user_data AS ud
 						ON(ud.user_id = u.id)
@@ -124,6 +127,19 @@ class Users_model extends CI_Model {
 		if($query->num_rows() > 0)
 		{
 			return $query;
+		}
+		return FALSE;
+	}
+	
+	public function profile($user_id)
+	{
+		$this->db->select('profile');
+		$this->db->where('user_id', $user_id);
+		$query = $this->db->get('user_profile');
+		if($query->num_rows() == 1)
+		{
+			$row = $query->row_array();
+			return $row['profile'];
 		}
 		return FALSE;
 	}

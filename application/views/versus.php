@@ -15,7 +15,7 @@
 
 			<h5>Uploader</h5>
 			<p>
-				<i><?php echo $left['title'] . '</i> ' . ucfirst($left['username']);?>
+				<i><?php echo $left['title'] . '</i> <a href="/user/profile/' . $left['username'] . '">' . ucfirst($left['username'] . '</a>');?>
 			</p>
 			<h5>Uploaded</h5>
 			<p>
@@ -39,7 +39,7 @@
 
 			<h5>Uploader</h5>
 			<p>
-				<i><?php echo $right['title'] . '</i> ' . ucfirst($right['username']);?>
+				<i><?php echo $right['title'] . '</i> <a href="/user/profile/' . $right['username'] . '">' . ucfirst($right['username'] . '</a>');?>
 			</p>
 			<h5>Uploaded</h5>
 			<p>
