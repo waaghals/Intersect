@@ -19,30 +19,33 @@ class Process_model extends CI_Model {
 		$query = $this->db->query($sql, $hash);
 		if($query->num_rows() > 0)
 		{
-			show_error('Duplicate image, please upload an other image.');
+			$row = $query->row_array();
+			$this->image_id = $row['id'];
 		}
-
-		//No duplicate found
-		$this->db->set('hash', 'UNHEX(\'' . $hash . '\')', FALSE);
-		$this->db->set('uploaded', date("Y-m-d H:i:s"));
-		$this->db->insert('image');
-		$this->image_id = $this->db->insert_id();
-		$this->store_data($upload_data);
-
-		//Try to move the uploaded file
-		if( ! $this->move_file($upload_data['full_path']))
+		else
 		{
-			//Could not move the file, rollback the database inserts
-			$this->db->trans_rollback();
-			return FALSE;
+			//No duplicate found
+			$this->db->set('hash', 'UNHEX(\'' . $hash . '\')', FALSE);
+			$this->db->set('uploaded', date("Y-m-d H:i:s"));
+			$this->db->insert('image');
+			$this->image_id = $this->db->insert_id();
+			$this->store_data($upload_data);
+	
+			//Try to move the uploaded file
+			if( ! $this->move_file($upload_data['full_path']))
+			{
+				//Could not move the file, rollback the database inserts
+				$this->db->trans_rollback();
+				return FALSE;
+			}
+			
+			//Add the image to the queue
+			$this->load->model('queue_model', 'queue');
+			$this->queue->add($this->image_id);
 		}
 
-		//Add the image to the queue
-		$this->load->model('queue_model', 'queue');
-		$this->queue->add($this->image_id);
-
-		//Bind the images to the user
-		$this->db->query('INSERT INTO user_image (user_id, image_id) VALUES (?, ?)', array($this->auth->get_user_id(), $this->image_id));
+		//Bind the images to the user, use IGNORE because the user could already be bind to that particular image
+		$this->db->query('INSERT IGNORE INTO user_image (user_id, image_id) VALUES (?, ?)', array($this->auth->get_user_id(), $this->image_id));
 
 		if($this->db->trans_status() === FALSE)
 		{
