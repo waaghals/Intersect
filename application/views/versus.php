@@ -8,14 +8,14 @@
 			<?php
 			$tags = explode(',', $left['tags']);
 			foreach($tags as $tag):
-				echo '<span class="label">' . $tag . '</span> ';
+				echo '<i class="icon-tag"></i>' . ucfirst($tag) . ' ';
 			endforeach;
 			endif;
 			?>
 
 			<h5>Uploader</h5>
 			<p>
-				<i><?php echo $left['title'] . '</i> ' . $left['username'];?>
+				<i><?php echo $left['title'] . '</i> ' . ucfirst($left['username']);?>
 			</p>
 			<h5>Uploaded</h5>
 			<p>
@@ -32,14 +32,14 @@
 			<?php
 			$tags = explode(',', $right['tags']);
 			foreach($tags as $tag):
-				echo '<span class="label">' . $tag . '</span> ';
+				echo '<i class="icon-tag"></i>' . ucfirst($tag) . ' ';
 			endforeach;
 			endif;
 			?>
 
 			<h5>Uploader</h5>
 			<p>
-				<i><?php echo $right['title'] . '</i> ' . $right['username'];?>
+				<i><?php echo $right['title'] . '</i> ' . ucfirst($right['username']);?>
 			</p>
 			<h5>Uploaded</h5>
 			<p>

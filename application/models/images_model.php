@@ -190,6 +190,14 @@ class Images_model extends CI_Model {
 	
 	public function add_tag($img_id, $tag)
 	{
+		if( ! is_int($img_id))
+		{
+			show_error('First agrument is not an int in add_tag');
+		}
+		
+		//Leave only letter, numbers and spaces
+		$tag = trim(strtolower(preg_replace('[^\w\s]', ' ', $tag)));
+		
 		$sql = 'SELECT id FROM tag WHERE tag = ?';
 		$query = $this->db->query($sql, $tag);
 		
@@ -207,7 +215,12 @@ class Images_model extends CI_Model {
 		}
 		
 		$sql = 'INSERT INTO image_tag_map (image_id, tag_id) VALUES (?, ?)';
-		return $this->db->query($sql, array($img_id, $tag_id));
+		$this->db->query($sql, array($img_id, $tag_id));
+		
+		$this->load->model('users_model', 'user');
+		$this->config->load('karma');
+		$this->user->add_karma($this->session->userdata('user_id'), $this->config->item('tag_karma'));
+		
 	}
 
 }
