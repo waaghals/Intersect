@@ -178,14 +178,7 @@ class User extends CI_Controller {
 			$img = $this->user->get_user_images_info($user['id']);
 		}
 
-		if( ! $markdown_source = $this->user->profile($user['id']))
-		{
-			$markdown_source = <<<MARKDOWN
-#_{title}_ {username}
-Hello I'm {username} and I am here for over {timeframe}.
-MARKDOWN;
-		}
-
+		$markdown_source = $this->user->profile($user['id']);
 		$html = $this->markdown->transform($markdown_source);
 		
 		$faves = $this->user->get_faves($user_id);

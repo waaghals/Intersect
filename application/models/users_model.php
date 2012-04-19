@@ -101,11 +101,27 @@ class Users_model extends CI_Model {
 	
 	function change_profile($user_id, $markdown)
 	{
-		$this->db->set('profile', $markdown);
-		$this->db->where('user_id', $user_id);
-
-		$this->db->update('user_profile');
-		return $this->db->affected_rows() > 0;
+		$rev_id = $this->create_revision($markdown);
+		
+		$sql = "INSERT INTO profile (user_id, latest_rev_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE latest_rev_id = ?";
+        $query = $this->db->query($sql, array($user_id, $rev_id, $rev_id));
+		if($this->db->affected_rows() > 0)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	private function create_revision($markdown)
+	{
+		$user_id = $this->session->userdata('user_id');
+    	$sql = "INSERT INTO revisions (user_id, markdown, modified, comment) VALUES (?, ?, ?, ?)";
+		$query = $this->db->query($sql, array($user_id, $markdown, date("Y-m-d H:i:s"), 'Profile update'));
+		if($this->db->affected_rows() == 1)
+		{
+			return $this->db->insert_id();
+		}
+		show_error('Could not create revision');
 	}
 
 	function add_karma($user_id, $amount)
@@ -162,15 +178,18 @@ class Users_model extends CI_Model {
 	
 	public function profile($user_id)
 	{
-		$this->db->select('profile');
-		$this->db->where('user_id', $user_id);
-		$query = $this->db->get('user_profile');
+		$sql = "SELECT markdown FROM profile AS p JOIN revisions AS r ON (p.latest_rev_id = r.id) WHERE p.user_id = ?";
+		$query = $this->db->query($sql, $user_id);
+
 		if($query->num_rows() == 1)
 		{
 			$row = $query->row_array();
-			return $row['profile'];
+			return $row['markdown'];
 		}
-		return FALSE;
+		return <<<MARKDOWN
+#_{title}_ {username}
+Hello I'm {username} and I am here for over {timeframe}.
+MARKDOWN;
 	}
 	
 	public function add_fav($user_id, $img_id)
