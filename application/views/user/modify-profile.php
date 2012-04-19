@@ -15,6 +15,8 @@
 					<button type="submit" class="btn btn-primary">
 						Modify Profile
 					</button>
+					
+					<a href="/user/profile" target="_blank" class="btn">How your current profile looks</a>
 				</div>
 			</fieldset>
 		</form>
@@ -67,6 +69,7 @@
 			<li><em>{imgcount}</em></li>
 			<li><em>{imgsize}</em><br />Total size of images on the server</li>
 			<li><em>{imgrating}</em><br />Average rating of your images</li>
+			<li><em>{faves}</em><br />A gallery of you latest favorite images</li>
 		</ul>
 		<hr>
 		<h3>Markdown</h3>
