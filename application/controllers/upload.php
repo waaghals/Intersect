@@ -38,11 +38,10 @@ class Upload extends CI_Controller {
 		$this->load->library('upload');
 		if($this->cache->get('vacuuming') === FALSE)
 		{
-
 			//Not 'vacuuming', free to upload files
-			if( ! $this->upload->do_upload())
+			if( ! $uploads = $this->upload->do_multi_upload())
 			{
-				show_error('Failed to upload the file, please try again.');
+				show_error($this->upload->display_errors());
 			}
 			else
 			{
@@ -50,11 +49,25 @@ class Upload extends CI_Controller {
 				$this->load->model('process_model', 'process');
 
 				//Try and process the file; insert in to database and move the uploaded file
-				$image_id = $this->process->image($this->upload->data());
-				if( ! $image_id)
+				$i;
+				foreach($uploads as $data)
 				{
-					show_error('Something went wrong, please try again.');
+					$this->process->image($data);
+					$i++;
 				}
+				
+				/*
+				$this->load->view('include/header');
+				$this->load->view('include/nav');
+				$this->load->view('upload/preview', array('part' => 'open'));
+				foreach($uploads as $data)
+				{
+					$img_id = $this->process->image($data);
+					$this->load->view('upload/thumbnail', array('id' => $img_id));
+				}
+				$this->load->view('upload/preview', array('part' => 'close'));
+				$this->load->view('include/footer');
+				
 				
 				//Add the tags
 				$tags = explode(',', $this->input->post('tags'));
@@ -68,13 +81,9 @@ class Upload extends CI_Controller {
 				$this->load->model('users_model', 'users');
 				$this->config->load('karma');
 				$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
-				
+				*/
 				//Redirect the user back
-				$this->session->set_flashdata('success', 'Image uploaded');
-				if($redirect = $this->session->flashdata('redirect'))
-				{
-					redirect($redirect);
-				}
+				$this->session->set_flashdata('success', $i . ' Image(s) uploaded');
 				redirect('/');
 			}
 		}
@@ -82,6 +91,23 @@ class Upload extends CI_Controller {
 		{
 			show_error('One moment, the upload folder is being vacuumed by our cleaning lady, please try again.');
 		}
+	}
+
+	public function tag()
+	{
+		$i = 0;
+		foreach($this->input->post('tags') as $img_id => $tag_str)
+		{
+			$tags = explode(',', $tag_str);
+			$this->load->model('images_model', 'images');
+			foreach($tags as $tag)
+			{
+				$this->images->add_tag($img_id, $tag);
+				$i++;
+			}
+		}
+		
+		echo $i . ' tags saved';
 	}
 
 }
