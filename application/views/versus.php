@@ -12,15 +12,15 @@
 			endforeach;
 			endif;
 			?>
-
-			<h5>Uploader</h5>
-			<p>
-				<i><?php echo $left['title'] . '</i> <a href="/user/profile/' . $left['username'] . '">' . ucfirst($left['username'] . '</a>');?>
-			</p>
-			<h5>Uploaded</h5>
-			<p>
-				<?php echo $left['uploaded'];?>
-			</p>
+			<ul>
+				<li><i><?php echo $left['title'] . '</i> <a href="/user/profile/' . $left['username'] . '">' . ucfirst($left['username'] . '</a>');?></li>
+				<li><?php echo $left['uploaded'];?></li>
+			</ul>
+			<?php
+			echo form_open('image/fav', array('name' => 'left_fav'));
+			echo form_hidden(array('image_id' => $left['id']));
+			echo form_submit(array('name' => 'left_fav_sub', 'class' => 'btn'), 'Fav!');
+			echo form_close(); ?>
 		</div>
 	</li>
 	<li class="span6">
@@ -36,15 +36,15 @@
 			endforeach;
 			endif;
 			?>
-
-			<h5>Uploader</h5>
-			<p>
-				<i><?php echo $right['title'] . '</i> <a href="/user/profile/' . $right['username'] . '">' . ucfirst($right['username'] . '</a>');?>
-			</p>
-			<h5>Uploaded</h5>
-			<p>
-				<?php echo $right['uploaded'];?>
-			</p>
+			<ul>
+				<li><i><?php echo $right['title'] . '</i> <a href="/user/profile/' . $right['username'] . '">' . ucfirst($right['username'] . '</a>');?></li>
+				<li><?php echo $right['uploaded'];?></li>
+			</ul>
+			<?php
+			echo form_open('image/fav', array('name' => 'right_fav'));
+			echo form_hidden(array('image_id' => $right['id']));
+			echo form_submit(array('name' => 'right_fav_sub', 'class' => 'btn'), 'Fav!');
+			echo form_close(); ?>
 		</div>
 	</li>
 </ul>

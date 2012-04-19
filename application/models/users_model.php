@@ -172,6 +172,44 @@ class Users_model extends CI_Model {
 		}
 		return FALSE;
 	}
+	
+	public function add_fav($user_id, $img_id)
+	{
+		$sql = 'INSERT IGNORE INTO user_fav (user_id, image_id, added) VALUES (?, ?, ?)';
+		$this->db->query($sql, array($user_id, $img_id, date('Y-m-d H:i:s')));
+		if($this->db->affected_rows() > 0)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	public function get_faves($user_id)
+	{
+		$sql = "
+			SELECT 
+				i.id, 
+				d.width * d.height / 150000 + i.rating AS rating,
+				d.width AS width,
+				d.height AS height,
+				ROUND(250 / d.height * d.width) AS twidth,
+				250 AS theight,
+				NULL AS vwidth
+			FROM image AS i
+				JOIN image_data AS d 
+					ON ( i.id = d.image_id ) 
+				JOIN user_fav AS f
+					ON ( i.id = f.image_id)
+			WHERE f.user_id = ?
+			ORDER BY f.added DESC";
+
+		$query = $this->db->query($sql , $user_id);
+		if($query->num_rows() > 0)
+		{
+			return $query->result_array();
+		}
+		return FALSE;
+	}
 
 }
 

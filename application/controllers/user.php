@@ -164,7 +164,7 @@ class User extends CI_Controller {
 	{
 		$this->load->model('users_model', 'user');
 		$this->load->library('markdown');
-		$this->load->helper(array('date', 'inflector', 'number'));
+		$this->load->helper(array('date', 'inflector', 'number', 'image_justifaction'));
 		
 		$user_id = $this->session->userdata('user_id');
 		if( ! $username)
@@ -187,7 +187,17 @@ MARKDOWN;
 		}
 
 		$html = $this->markdown->transform($markdown_source);
-
+		
+		$faves = $this->user->get_faves($user_id);
+		if($faves === FALSE)
+		{
+			$data['rows'] = 'User does not have any faves';
+		}
+		else
+		{
+			$data['rows'] = build_gallery($faves, 1170, 6);
+		}
+		$faves = $this->load->view('gallery', $data, TRUE);
 		$vars = array(
 					'{username}', 
 					'{title}', 
@@ -197,9 +207,10 @@ MARKDOWN;
 					'{karma}', 
 					'{rankth}', 
 					'{rank}', 
-					'{img_count}', 
-					'{img_size}',
-					'{img_rating}');
+					'{imgcount}', 
+					'{imgsize}',
+					'{imgrating}',
+					'{faves}');
 
 		$values = array(
 					ucfirst($user['name']), 
@@ -212,7 +223,8 @@ MARKDOWN;
 					$user['rank'], 
 					$img['img_count'],
 					byte_format($img['img_size']),
-					round($img['rating']));
+					round($img['rating']),
+					$faves);
 					
 		$html = str_replace($vars, $values, $html);
 

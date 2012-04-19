@@ -53,6 +53,35 @@ class Image extends CI_Controller {
 		$this->load->view('echo', $data);
 	}
 
+	public function fav()
+	{
+		$this->load->library('form_validation');
+		$this->load->model('users_model', 'user');
+		$this->load->model('images_model', 'image');
+		$this->form_validation->set_rules('image_id', 'Img Id', 'required|numeric');
+
+		if ($this->form_validation->run() == FALSE)
+		{
+			show_error('Nope!');
+		}
+		else
+		{
+			if( ! $this->image->get_data($this->input->post('image_id')))
+			{
+				show_error('Nope!');
+			}
+			if($this->user->add_fav($this->session->userdata('user_id'), $this->input->post('image_id')))
+			{
+				$this->session->set_flashdata('success', 'Image has been added to your favorites');
+				redirect('/');
+				return;
+			}
+			$this->session->set_flashdata('warning', 'Image might already be in favorites, Image not added!');
+			redirect('/');
+			return;
+		}
+	}
+
 }
 
 /* End of file image.php */
