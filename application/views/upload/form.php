@@ -3,7 +3,7 @@
 <div class="control-group">
 	<label class="control-label" for="file_input">Select File(s)</label>
 	<div class="controls">
-		<input class="input-file" id="file_input" type="file" name="userfile[]" multiple="multiple"/>
+		<input class="input-file" id="file_input" type="file" name="files[]" multiple="multiple"/>
 	</div>
 </div>
 <div class="form-actions">

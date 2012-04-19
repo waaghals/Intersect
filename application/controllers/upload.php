@@ -35,57 +35,55 @@ class Upload extends CI_Controller {
 
 	function process()
 	{
+		$config['upload_path'] 		= APPPATH . 'tmp/';
+		$config['allowed_types'] 	= 'gif|jpg|png';
+		$config['max_size']			= '20480'; //20MB
+		$config['max_width'] 		= '6000';
+		$config['max_height']  		= '6000';
+		$config['overwrite'] 		= FALSE;
+		
 		$this->load->library('upload');
+		$this->load->model('process_model', 'process');
+		
 		if($this->cache->get('vacuuming') === FALSE)
 		{
 			//Not 'vacuuming', free to upload files
-			if( ! $uploads = $this->upload->do_multi_upload())
+			$j = 0; $k = 0;
+			for($i = 0; $i < count($_FILES['files']['name']); $i++)
 			{
-				show_error($this->upload->display_errors());
+				$_FILES['field_name']['name'] 		= $_FILES['files']['name'][$i];
+				$_FILES['field_name']['type'] 		= $_FILES['files']['type'][$i];
+				$_FILES['field_name']['tmp_name'] 	= $_FILES['files']['tmp_name'][$i];
+				$_FILES['field_name']['error'] 		= $_FILES['files']['error'][$i];
+				$_FILES['field_name']['size'] 		= $_FILES['files']['size'][$i];
+	
+				$this->upload->initialize($config);
+	
+				if($this->upload->do_upload('field_name'))
+				{
+					//Try and process the file; insert in to database and move the uploaded file
+					if($this->process->image($this->upload->data()))
+					{
+						$j++;
+					}
+					$k++;
+				}
 			}
-			else
-			{
-				//Upload successfull
-				$this->load->model('process_model', 'process');
 
-				//Try and process the file; insert in to database and move the uploaded file
-				$i;
-				foreach($uploads as $data)
-				{
-					$this->process->image($data);
-					$i++;
-				}
-				
-				/*
-				$this->load->view('include/header');
-				$this->load->view('include/nav');
-				$this->load->view('upload/preview', array('part' => 'open'));
-				foreach($uploads as $data)
-				{
-					$img_id = $this->process->image($data);
-					$this->load->view('upload/thumbnail', array('id' => $img_id));
-				}
-				$this->load->view('upload/preview', array('part' => 'close'));
-				$this->load->view('include/footer');
-				
-				
-				//Add the tags
-				$tags = explode(',', $this->input->post('tags'));
-				$this->load->model('images_model', 'images');
-				foreach($tags as $tag)
-				{
-					$this->images->add_tag($image_id, $tag);
-				}
-				
-				//Add the karma
-				$this->load->model('users_model', 'users');
-				$this->config->load('karma');
-				$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
-				*/
-				//Redirect the user back
-				$this->session->set_flashdata('success', $i . ' Image(s) uploaded');
-				redirect('/');
+			//Redirect the user back
+			if($j > 0)
+			{
+				$this->session->set_flashdata('success', $j . ' Image(s) uploaded');
 			}
+			
+			$dubs = $k - $j;
+			if($dubs > 0)
+			{
+				$this->session->set_flashdata('warning', $dubs . ' Duplicate files have been ignored');
+			}
+			
+			$this->session->set_flashdata('error', $this->upload->display_errors());
+			redirect('/');
 		}
 		else
 		{

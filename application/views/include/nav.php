@@ -71,7 +71,7 @@
   <?php if($this->session->flashdata('error') != ''): ?>
 	<div class="alert alert-error">
 	  <a class="close" data-dismiss="alert">×</a>
-	  <strong>Error!</strong> <?php echo $this->session->flashdata('error');?>
+	  <strong>Error:</strong> <?php echo $this->session->flashdata('error');?>
 	</div>
   <?php endif;?>
   
@@ -85,7 +85,7 @@
   <?php if(validation_errors() != ''): ?>
 	<div class="alert alert-warning">
 	  <a class="close" data-dismiss="alert">×</a>
-	  <strong>Success</strong> <?php echo validation_errors();?>
+	  <strong>Validation Error:</strong> <?php echo validation_errors();?>
 	</div>
   <?php endif;?>
 

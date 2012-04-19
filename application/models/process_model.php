@@ -42,6 +42,11 @@ class Process_model extends CI_Model {
 			//Add the image to the queue
 			$this->load->model('queue_model', 'queue');
 			$this->queue->add($this->image_id);
+			
+			//Add the karma
+			$this->load->model('users_model', 'users');
+			$this->config->load('karma');
+			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
 		}
 
 		//Bind the images to the user, use IGNORE because the user could already be bind to that particular image
@@ -63,12 +68,13 @@ class Process_model extends CI_Model {
 
 	private function store_data($upload_data)
 	{
+		$exif = $this->exif($upload_data['full_path']);
 		$data = array('image_id' => $this->image_id, 'width' => $upload_data['image_width'], 'height' => $upload_data['image_height'], 'created' => $exif['created'], 'mime' => $upload_data['file_type'], 'size' => $upload_data['file_size']);
 		$this->db->insert('image_data', $data);
 		
-		if($exif = $this->exif($upload_data['full_path']))
+		if($exif['geo'])
 		{
-			$this->db->insert('image_geo', array('lat' => $exif['lat'], 'lng' => $exif['lng'], 'image_id' => $this->image_id));
+			$this->db->insert('image_geo', array('lat' => $exif['geo']['lat'], 'lng' => $exif['geo']['lng'], 'image_id' => $this->image_id));
 		}
 		
 		$this->load->model('images_model', 'image');
@@ -121,10 +127,7 @@ class Process_model extends CI_Model {
 				$return['created'] = NULL;
 			}
 
-			$geo = $this->geo($file);
-
-			$return['lat'] = $geo['lat'];
-			$return['lng'] = $geo['lng'];
+			$return['geo'] = $this->geo($file);
 			return $return;
 		}
 	}
