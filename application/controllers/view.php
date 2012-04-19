@@ -19,15 +19,16 @@ class View extends CI_Controller {
 
 	public function image($id)
 	{
-		$this->load->model('images_model', 'images');
-		$img = $this->images->get_image($id);
-
 		$this->load->model('tag_model', 'tags');
-		$tags = $this->tags->for_image($id);
-
-		$this->load->view('image', $img);
-		$this->load->view('tags', array('tags' => $tags));
-		$this->load->view('tracker');
+		$data['tags'] = $this->tags->for_image($id);
+		$this->load->helper('path');
+		$data['path'] = path_to_image($id) . $id;
+		$data['id'] = $id;
+		
+		$this->load->view('include/header.php');
+		$this->load->view('include/nav.php');
+		$this->load->view('view/image.php', $data);
+		$this->load->view('include/footer.php');
 	}
 
 	public function top($number = 500)
