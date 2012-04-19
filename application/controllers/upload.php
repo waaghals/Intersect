@@ -48,7 +48,9 @@ class Upload extends CI_Controller {
 		if($this->cache->get('vacuuming') === FALSE)
 		{
 			//Not 'vacuuming', free to upload files
-			$j = 0; $k = 0;
+			$duplicate = 0;
+			$success = 0;
+			$failed = 0;
 			for($i = 0; $i < count($_FILES['files']['name']); $i++)
 			{
 				$_FILES['field_name']['name'] 		= $_FILES['files']['name'][$i];
@@ -62,26 +64,38 @@ class Upload extends CI_Controller {
 				if($this->upload->do_upload('field_name'))
 				{
 					//Try and process the file; insert in to database and move the uploaded file
-					if($this->process->image($this->upload->data()))
+					$img = $this->process->image($this->upload->data());
+					if(is_null($img))
 					{
-						$j++;
+						$duplicate++;
+
 					}
-					$k++;
+					elseif(is_int($img))
+					{
+						$success++;
+					}
+					else
+					{
+						$failed++;
+					}
 				}
 			}
 
 			//Redirect the user back
-			if($j > 0)
+			if($success > 0)
 			{
-				$this->session->set_flashdata('success', $j . ' Image(s) uploaded');
+				$this->session->set_flashdata('success', $success . ' Image(s) added');
 			}
 			
-			$dubs = $k - $j;
-			if($dubs > 0)
+			if($duplicate > 0)
 			{
-				$this->session->set_flashdata('warning', $dubs . ' Duplicate files have been ignored');
+				$this->session->set_flashdata('warning', $duplicate . ' Duplicate files have been ignored');
 			}
-			
+
+			if($failed > 0)
+			{
+				$this->session->set_flashdata('error', $failed . ' Could not be processed');
+			}
 			$this->session->set_flashdata('error', $this->upload->display_errors());
 			redirect('/');
 		}

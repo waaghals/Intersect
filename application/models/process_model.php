@@ -17,12 +17,9 @@ class Process_model extends CI_Model {
 		$this->db->trans_begin();
 		$sql = "SELECT id FROM image WHERE LOWER(HEX(hash)) = ?";
 		$query = $this->db->query($sql, $hash);
-		if($query->num_rows() > 0)
-		{
-			$row = $query->row_array();
-			$this->image_id = $row['id'];
-		}
-		else
+		$duplicate = ($query->num_rows() == 0);
+		
+		if($duplicate)
 		{
 			//No duplicate found
 			$this->db->set('hash', 'UNHEX(\'' . $hash . '\')', FALSE);
@@ -48,6 +45,11 @@ class Process_model extends CI_Model {
 			$this->config->load('karma');
 			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('upload_karma'));
 		}
+		else
+		{
+			$row = $query->row_array();
+			$this->image_id = $row['id'];
+		}
 
 		//Bind the images to the user, use IGNORE because the user could already be bind to that particular image
 		$this->db->query('INSERT IGNORE INTO user_image (user_id, image_id) VALUES (?, ?)', array($this->auth->get_user_id(), $this->image_id));
@@ -62,6 +64,10 @@ class Process_model extends CI_Model {
 		else
 		{
 			$this->db->trans_commit();
+			if( ! $duplicate)
+			{
+				return NULL;
+			}
 			return $this->image_id;
 		}
 	}
