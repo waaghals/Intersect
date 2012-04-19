@@ -63,10 +63,13 @@ class Process_model extends CI_Model {
 
 	private function store_data($upload_data)
 	{
-		$exif = $this->exif($upload_data['full_path']);
-
-		$data = array('image_id' => $this->image_id, 'lat' => $exif['lat'], 'lng' => $exif['lng'], 'width' => $upload_data['image_width'], 'height' => $upload_data['image_height'], 'created' => $exif['created'], 'mime' => $upload_data['file_type'], 'size' => $upload_data['file_size']);
+		$data = array('image_id' => $this->image_id, 'width' => $upload_data['image_width'], 'height' => $upload_data['image_height'], 'created' => $exif['created'], 'mime' => $upload_data['file_type'], 'size' => $upload_data['file_size']);
 		$this->db->insert('image_data', $data);
+		
+		if($exif = $this->exif($upload_data['full_path']))
+		{
+			$this->db->insert('image_geo', array('lat' => $exif['lat'], 'lng' => $exif['lng'], 'image_id' => $this->image_id));
+		}
 		
 		$this->load->model('images_model', 'image');
 		if($exif['make'])
@@ -132,7 +135,7 @@ class Process_model extends CI_Model {
 
 		if( ! $exif || $exif['GPS']['GPSLatitude'] == '')
 		{
-			return array('lat' => NULL, 'lon' => NULL);
+			return FALSE;
 		}
 		else
 		{
