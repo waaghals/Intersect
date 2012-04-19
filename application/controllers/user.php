@@ -203,7 +203,7 @@ MARKDOWN;
 					'{title}', 
 					'{timeframe}', 
 					'{since}', 
-					'{user_id}', 
+					'{userid}', 
 					'{karma}', 
 					'{rankth}', 
 					'{rank}', 

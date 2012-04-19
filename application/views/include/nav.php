@@ -34,6 +34,9 @@
             <ul class="nav pull-right">
               <?php if($this->auth->is_logged_in()): ?>
               <li class="">
+                <a href="/user/modify">Edit Profile</a>
+              </li>
+              <li class="">
                 <a href="/user/sign_out">Sign Out</a>
               </li>
               <?php else: ?>

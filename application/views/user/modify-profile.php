@@ -57,16 +57,16 @@
 		</p>
 		<ul>
 			<li><em>{username}</em></li>
-			<li><em>{user_id}</em></li>
+			<li><em>{userid}</em></li>
 			<li><em>{rankth}</em><br />Your rank as 123th</li>
 			<li><em>{rank}</em><br />Your rank as 123</li>
 			<li><em>{title}</em></li>
 			<li><em>{timeframe}</em><br />Relative date when you signed up, does not include 'ago'</li>
 			<li><em>{since}</em><br />Date and time from when you signed up</li>
 			<li><em>{karma}</em></li>
-			<li><em>{img_count}</em></li>
-			<li><em>{img_size}</em><br />Total size of images on the server</li>
-			<li><em>{img_rating}</em><br />Average rating of your images</li>
+			<li><em>{imgcount}</em></li>
+			<li><em>{imgsize}</em><br />Total size of images on the server</li>
+			<li><em>{imgrating}</em><br />Average rating of your images</li>
 		</ul>
 		<hr>
 		<h3>Markdown</h3>
