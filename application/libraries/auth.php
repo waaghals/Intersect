@@ -23,8 +23,8 @@ class Auth {
 				return TRUE;
 			}
 		}
-		$this->session->set_flashdata('error', 'Username or password incorrect.');
-		$this->load->helper('url');
+		$this->ci->session->set_flashdata('error', 'Username or password incorrect.');
+		$this->ci->load->helper('url');
 		redirect('/user/sign_in');
 	}
 
