@@ -74,6 +74,8 @@ class Users_model extends CI_Model {
 			$user_id = $this->db->insert_id();
 			
 			$this->add_karma($user_id, 100);
+			$this->update_data_table();
+			
 			return $user_id;
 		}
 		return FALSE;

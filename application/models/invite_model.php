@@ -43,14 +43,14 @@ class Invite_model extends CI_Model {
 	
 	public function is_valid($key)
 	{
-		$sql = 'SELECT name FROM user_key JOIN user ON user.id = user_key.user_id WHERE `key` = ?  AND user_key.created > (NOW() - INTERVAL 1 MONTH)';
+		$sql = 'SELECT name FROM user_key LEFT JOIN user ON user.id = user_key.user_id WHERE `key` = ?  AND user_key.created > (NOW() - INTERVAL 1 MONTH)';
 		$query = $this->db->query($sql, $key);
 
 		if($query->num_rows() == 1)
 		{
 			$row = $query->row_array();
 			$this->remove_key($key);
-			return $row['name'];
+			return (is_null($row['name'])) ? 'Someone' : $row['name'];
 		}
 		return FALSE;
 	}
