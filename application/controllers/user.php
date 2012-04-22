@@ -29,57 +29,44 @@ class User extends CI_Controller {
 			redirect('/');
 		}
 
-		if($this->input->post('submit'))
+		//Form submitted
+		$this->load->library('form_validation');
+
+		$this->form_validation->set_rules('username', 'Username', 'required');
+		$this->form_validation->set_rules('password', 'Password', 'required');
+
+		if($this->form_validation->run() == FALSE)
 		{
-			//Form submitted
-			$this->load->library('form_validation');
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
+			$this->load->view('user/sign_in_form');
+			$this->load->view('include/footer');
 
-			$this->form_validation->set_rules('username', 'Username', 'required');
-			$this->form_validation->set_rules('password', 'Password', 'required');
+			$this->session->keep_flashdata('redirect');
+		}
+		else
+		{
+			if($this->auth->sign_in($this->input->post('username'), $this->input->post('password')))
+			{
+				$this->load->model('users_model', 'users');
+				$this->config->load('karma');
+				$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('sign_in_karma'));
 
-			if($this->form_validation->run() == FALSE)
+				if($redirect = $this->session->flashdata('redirect'))
+				{
+					redirect($redirect);
+				}
+				redirect('/');
+			}
+			else
 			{
 				$this->load->view('include/header');
 				$this->load->view('include/nav');
 				$this->load->view('user/sign_in_form');
 				$this->load->view('include/footer');
-
 				$this->session->keep_flashdata('redirect');
 			}
-			else
-			{
-				if($this->auth->sign_in($this->input->post('username'), $this->input->post('password')))
-				{
-					$this->load->model('users_model', 'users');
-					$this->config->load('karma');
-					$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('sign_in_karma'));
-
-					if($redirect = $this->session->flashdata('redirect'))
-					{
-						redirect($redirect);
-					}
-					redirect('/');
-				}
-				else
-				{
-					$this->load->view('include/header');
-					$this->load->view('include/nav');
-					$this->load->view('user/sign_in_form');
-					$this->load->view('include/footer');
-					$this->session->keep_flashdata('redirect');
-				}
-			}
 		}
-		else
-		{
-			//Show the sign in form
-			$this->load->view('include/header');
-			$this->load->view('include/nav');
-			$this->load->view('user/sign_in_form');
-			$this->load->view('include/footer');
-			$this->session->keep_flashdata('redirect');
-		}
-
 	}
 
 	public function sign_up()
@@ -90,48 +77,37 @@ class User extends CI_Controller {
 			redirect('/');
 		}
 
-		if($this->input->post('submit'))
+		//Form submitted
+		$this->load->library('form_validation');
+
+		$this->form_validation->set_rules('username', 'Username', 'required|is_unique[user.name]');
+		$this->form_validation->set_rules('password', 'Password', 'required');
+		$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required|matches[password]');
+		$this->form_validation->set_rules('key', 'Key', 'required|exact_length[10]|alpha');
+
+		if($this->form_validation->run() == FALSE)
 		{
-			//Form submitted
-			$this->load->library('form_validation');
-
-			$this->form_validation->set_rules('username', 'Username', 'required|is_unique[user.name]');
-			$this->form_validation->set_rules('password', 'Password', 'required');
-			$this->form_validation->set_rules('passconf', 'Password Confirmation', 'required|matches[password]');
-			$this->form_validation->set_rules('key', 'Key', 'required|exact_length[10]|alpha');
-
-			if($this->form_validation->run() == FALSE)
-			{
-				$this->load->view('include/header');
-				$this->load->view('include/nav');
-				$this->load->view('user/sign_up_form');
-				$this->load->view('include/footer');
-			}
-			else
-			{
-				$this->load->model('invite_model', 'invite');
-				$inviter = $this->invite->is_valid($this->input->post('key'));
-				if($inviter === FALSE)
-				{
-					$this->session->set_flashdata('error', 'Key is invalid, It might have been expired.');
-					redirect('/user/sign_up');
-				}
-				else
-				{
-					$this->auth->create_user($this->input->post('username'), $this->input->post('password'));
-					$this->session->set_flashdata('success', 'Account created, ' . $inviter . ' welcomes you!');
-					redirect('/user/sign_in');
-				}
-
-			}
-		}
-		else
-		{
-			//Show the sign in form
 			$this->load->view('include/header');
 			$this->load->view('include/nav');
 			$this->load->view('user/sign_up_form');
 			$this->load->view('include/footer');
+		}
+		else
+		{
+			$this->load->model('invite_model', 'invite');
+			$inviter = $this->invite->is_valid($this->input->post('key'));
+			if($inviter === FALSE)
+			{
+				$this->session->set_flashdata('error', 'Key is invalid, It might have been expired.');
+				redirect('/user/sign_up');
+			}
+			else
+			{
+				$this->auth->create_user($this->input->post('username'), $this->input->post('password'));
+				$this->session->set_flashdata('success', 'Account created, ' . $inviter . ' welcomes you!');
+				redirect('/user/sign_in');
+			}
+
 		}
 	}
 
@@ -178,11 +154,11 @@ class User extends CI_Controller {
 			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/user/sign_in');
 		}
-		
+
 		$this->load->model('users_model', 'user');
 		$this->load->library('markdown');
 		$this->load->helper(array('date', 'inflector', 'number', 'image_justifaction'));
-		
+
 		$user_id = $this->session->userdata('user_id');
 		if( ! $username)
 		{
@@ -197,7 +173,7 @@ class User extends CI_Controller {
 
 		$markdown_source = $this->user->profile($user['id']);
 		$html = $this->markdown->transform($markdown_source);
-		
+
 		$faves = $this->user->get_faves($user_id);
 		if($faves === FALSE)
 		{
@@ -208,34 +184,10 @@ class User extends CI_Controller {
 			$data['rows'] = build_gallery($faves, 1170, 6);
 		}
 		$faves = $this->load->view('gallery', $data, TRUE);
-		$vars = array(
-					'{username}', 
-					'{title}', 
-					'{timeframe}', 
-					'{since}', 
-					'{userid}', 
-					'{karma}', 
-					'{rankth}', 
-					'{rank}', 
-					'{imgcount}', 
-					'{imgsize}',
-					'{imgrating}',
-					'{faves}');
+		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{userid}', '{karma}', '{rankth}', '{rank}', '{imgcount}', '{imgsize}', '{imgrating}', '{faves}');
 
-		$values = array(
-					ucfirst($user['name']), 
-					$user['title'], 
-					timeframe($user['created']), 
-					$user['created'], 
-					$user['id'], 
-					$user['karma'], 
-					ordinal_suffix($user['rank']), 
-					$user['rank'], 
-					$img['img_count'],
-					byte_format($img['img_size']),
-					round($img['rating']),
-					$faves);
-					
+		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank'], $img['img_count'], byte_format($img['img_size']), round($img['rating']), $faves);
+
 		$html = str_replace($vars, $values, $html);
 
 		$this->load->view('include/header');
@@ -317,7 +269,6 @@ class User extends CI_Controller {
 				}
 				$this->session->set_flashdata('error', 'Wrong password');
 				redirect('/user/modify');
-				
 			}
 		}
 		elseif($section == 'profile')
