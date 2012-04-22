@@ -56,7 +56,7 @@ class Rate extends CI_Controller {
 			$this->queue->modify($winner, 'C');
 			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
 			$this->queue->modify($loser, 'C');
-			$this->db->query('INSERT INTO user_rate (user_id, win_id, los_id) VALUES (?, ?, ?)', array($this->session->userdata('user_id'), $winner, $loser));
+			$this->db->query('INSERT INTO user_rate (user_id, win_id, los_id, date) VALUES (?, ?, ?, CURDATE())', array($this->session->userdata('user_id'), $winner, $loser));
 			$this->db->trans_complete();
 			if($this->db->trans_status() === FALSE)
 			{
