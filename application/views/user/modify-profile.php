@@ -16,7 +16,7 @@
 						Modify Profile
 					</button>
 					
-					<a href="/user/profile" target="_blank" class="btn">How your current profile looks</a>
+					<a href="/user/profile/<?php echo $this->session->userdata('username'); ?>" target="_blank" class="btn">How your current profile looks</a>
 				</div>
 			</fieldset>
 		</form>

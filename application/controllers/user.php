@@ -160,15 +160,13 @@ class User extends CI_Controller {
 		$this->load->helper(array('date', 'inflector', 'number', 'image_justifaction'));
 
 		$user_id = $this->session->userdata('user_id');
-		if( ! $username)
+		if($username AND $user = $this->user->get_user_by_name($username) )
 		{
-			$user = $this->user->get_user_by_id($user_id);
-			$img = $this->user->get_user_images_info($user_id);
+			$img = $this->user->get_user_images_info($user['id']);
 		}
 		else
 		{
-			$user = $this->user->get_user_by_name($username);
-			$img = $this->user->get_user_images_info($user['id']);
+			show_404();
 		}
 
 		$markdown_source = $this->user->profile($user['id']);
