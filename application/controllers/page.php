@@ -12,6 +12,7 @@ class Page extends CI_Controller {
 		if( ! $this->auth->is_logged_in())
 		{
 			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/user/sign_in');
 		}
 	}

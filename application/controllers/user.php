@@ -137,13 +137,23 @@ class User extends CI_Controller {
 
 	public function sign_out()
 	{
-		$this->auth->sign_out();
-		$this->session->set_flashdata('notice', 'Logged out');
-		redirect('/');
+		if($this->auth->is_logged_in())
+		{
+			$this->auth->sign_out();
+			$this->session->set_flashdata('notice', 'Logged out');
+		}
+		redirect('/user/sign_in');
 	}
 
 	public function table($orderby = 'rank')
 	{
+		if( ! $this->auth->is_logged_in())
+		{
+			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->set_flashdata('redirect', uri_string());
+			redirect('/user/sign_in');
+		}
+
 		$this->load->library('table');
 		$this->table->set_template(array('table_open' => '<table class="table">'));
 
@@ -162,6 +172,13 @@ class User extends CI_Controller {
 
 	public function profile($username = FALSE)
 	{
+		if( ! $this->auth->is_logged_in())
+		{
+			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->set_flashdata('redirect', uri_string());
+			redirect('/user/sign_in');
+		}
+		
 		$this->load->model('users_model', 'user');
 		$this->load->library('markdown');
 		$this->load->helper(array('date', 'inflector', 'number', 'image_justifaction'));
@@ -236,7 +253,8 @@ class User extends CI_Controller {
 	{
 		if( ! $this->auth->is_autoconfirmed())
 		{
-			show_error('Not enough permissions');
+			$this->session->set_flashdata('notice', 'You need to have a higher rank to access this page');
+			redirect('/');
 		}
 		$this->load->model('invite_model', 'invite');
 		$data['numkeys'] = $this->invite->count_keys($this->session->userdata('user_id'));
@@ -260,6 +278,7 @@ class User extends CI_Controller {
 		if( ! $this->auth->is_logged_in())
 		{
 			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->set_flashdata('redirect', uri_string());
 			redirect('/user/sign_in');
 		}
 		$user_id = $this->session->userdata('user_id');

@@ -9,11 +9,11 @@ class Rate extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('url');
 
-		if( ! $this->auth->is_allowed())
+		if( ! $this->auth->is_logged_in())
 		{
-			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
+			$this->session->set_flashdata('warning', 'You are not logged in.');
 			$this->session->set_flashdata('redirect', uri_string());
-			redirect('/upload');
+			redirect('/user/sign_in');
 		}
 	}
 

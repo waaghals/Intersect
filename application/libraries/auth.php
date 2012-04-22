@@ -34,6 +34,7 @@ class Auth {
 		$this->ci->session->set_userdata(array('user_id' => '', 'username' => '', 'percentile' => ''));
 
 		$this->ci->session->sess_destroy();
+		$this->ci->session->sess_create(); 
 	}
 
 	function is_logged_in()

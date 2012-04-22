@@ -9,10 +9,11 @@ class Versus extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('url');
 
-		if( ! $this->auth->is_allowed())
+		if( ! $this->auth->is_logged_in())
 		{
-			$this->session->set_flashdata('warning', 'Your account has expired, upload an image to gain access again.');
-			redirect('/upload');
+			$this->session->set_flashdata('warning', 'You are not logged in.');
+			$this->session->set_flashdata('redirect', uri_string());
+			redirect('/user/sign_in');
 		}
 	}
 
