@@ -19,59 +19,62 @@ class Rate extends CI_Controller {
 
 	public function index()
 	{
+		//Please wait while loading...................
 		$this->load->library('form_validation');
+		$this->load->library('elo');
+		$this->load->helper('url');
+		$this->load->model('queue_model', 'queue');
+		$this->load->model('images_model', 'images');
+		$this->load->model('users_model', 'users');
+		$this->load->model('rate_model', 'rate');
+		$this->config->load('karma');
 
 		$this->form_validation->set_rules('winner', 'Winner', 'required|numeric');
 		$this->form_validation->set_rules('loser', 'Loser', 'required|numeric');
 
-		if($this->form_validation->run() == FALSE)
-		{
-			show_error('You messed up!');
-		}
-		else
+		if($this->form_validation->run())
 		{
 			$winner = $this->input->post('winner');
 			$loser = $this->input->post('loser');
 
-			$this->load->model('Images_model', 'images');
 			$winner_rating = $this->images->get_rating($winner);
 			$loser_rating = $this->images->get_rating($loser);
 
 			if( ! $winner_rating || ! $loser_rating)
 			{
 				//Id's are unvalid
-				show_error('Image does not exist');
+				redirect('/');
 			}
 
-			$this->load->model('Rate_model', 'rate');
-			$this->rate->set_winner($winner_rating);
-			$this->rate->set_loser($loser_rating);
-			$this->rate->calc_new_ratings();
-
-			$this->load->model('queue_model', 'queue');
+			$this->elo->set_winner($winner_rating);
+			$this->elo->set_loser($loser_rating);
+			$this->elo->calc_new_ratings();
 
 			//Update the new ratings
 			$this->db->trans_start();
-			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_winner_rating(), $winner));
+
+			//Change the images ratings
+			$this->rate->update_winner($winner);
+			$this->rate->update_loser($winner);
+
+			//Remove images from the queue
 			$this->queue->modify($winner, 'C');
-			$this->db->query('UPDATE image SET rating = ? WHERE id = ?', array($this->rate->get_loser_rating(), $loser));
 			$this->queue->modify($loser, 'C');
-			$this->db->query('INSERT INTO user_rate (user_id, win_id, los_id, date) VALUES (?, ?, ?, CURDATE())', array($this->session->userdata('user_id'), $winner, $loser));
+
+			//Add what the user rated to the database
+			$this->rate->add_user_rate($winner, $loser);
+
+			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('rate_karma'));
+
 			$this->db->trans_complete();
 			if($this->db->trans_status() === FALSE)
 			{
 				show_error('Error on updating the image ratings');
 			}
-			
-			$this->load->model('users_model', 'users');
-			$this->config->load('karma');
-			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('rate_karma'));
-			
-			$this->load->helper('url');
-			redirect('/');
 		}
+		//Showing warnings is for losers, just don't tell the user he f*cked up and redirect anyway
+		redirect('/');
 	}
-
 }
 
 /* End of file rate.php */
