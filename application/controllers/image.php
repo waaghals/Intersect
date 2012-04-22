@@ -58,27 +58,25 @@ class Image extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->model('users_model', 'user');
 		$this->load->model('images_model', 'image');
-		$this->form_validation->set_rules('image_id', 'Img Id', 'required|numeric');
+		$this->form_validation->set_rules('image_id', 'Img Id', 'required|numeric|exists[image.id]');
 
-		if ($this->form_validation->run() == FALSE)
+		if ($this->form_validation->run())
 		{
-			show_error('Nope!');
-		}
-		else
-		{
-			if( ! $this->image->get_data($this->input->post('image_id')))
-			{
-				show_error('Nope!');
-			}
 			if($this->user->add_fav($this->session->userdata('user_id'), $this->input->post('image_id')))
 			{
 				$this->session->set_flashdata('success', 'Image has been added to your favorites');
 				redirect('/');
-				return;
 			}
-			$this->session->set_flashdata('warning', 'Image might already be in favorites, Image not added!');
+			else
+			{
+				$this->session->set_flashdata('warning', 'Image might already be in favorites, Image not added!');
+				redirect('/');
+			}
+		}
+		else
+		{
+			//Let the user think we rated the image.
 			redirect('/');
-			return;
 		}
 	}
 
