@@ -65,19 +65,14 @@ class Image extends CI_Controller {
 			if($this->user->add_fav($this->session->userdata('user_id'), $this->input->post('image_id')))
 			{
 				$this->session->set_flashdata('success', 'Image has been added to your favorites');
-				redirect('/');
+
 			}
 			else
 			{
 				$this->session->set_flashdata('warning', 'Image might already be in favorites, Image not added!');
-				redirect('/');
 			}
 		}
-		else
-		{
-			//Let the user think we rated the image.
-			redirect('/');
-		}
+		redirect('/');
 	}
 	
 	public function tag()
