@@ -79,6 +79,25 @@ class Image extends CI_Controller {
 			redirect('/');
 		}
 	}
+	
+	public function tag()
+	{
+		$this->load->library('form_validation');
+		$this->load->model('users_model', 'user');
+		$this->load->model('images_model', 'image');
+		$this->form_validation->set_rules('image_id', 'Img Id', 'required|numeric|exists[image.id]');
+		$this->form_validation->set_rules('tags', 'Tags', 'required|valid_tags');
+
+		if ($this->form_validation->run())
+		{
+			foreach(explode(',', $this->input->post('tags')) as $tag)
+			{
+				$this->image->add_tag($this->input->post('image_id'), $tag, $this->session->userdata('user_id'));
+				echo 'Added ' . $tag . '<br />';
+			}
+		}
+		redirect('/');
+	}
 
 }
 

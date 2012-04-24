@@ -4,15 +4,17 @@ class Tag_model extends CI_Model {
 	public function for_image($id)
 	{
 		$sql = "SELECT 
-					tag
+					GROUP_CONCAT(tag) AS tags
 				FROM tag
 				JOIN image_tag_map ON image_tag_map.tag_id = tag.id
-				WHERE image_id = ?";
+				WHERE image_id = ?
+				GROUP BY image_id";
 		$q = $this->db->query($sql, $id);
 
-		if($q->num_rows() > 0)
+		if($q->num_rows() == 1)
 		{
-			return $q->result_array();
+			$row = $q->row_array(); 
+			return $row['tags'];
 		}
 		return FALSE;
 	}

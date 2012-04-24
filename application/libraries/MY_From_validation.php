@@ -19,7 +19,27 @@ class MY_Form_validation extends CI_Form_validation {
 
 		return $query->num_rows() !== 0;
 	}
+	
+	/**
+	 * Valid tags
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	bool
+	 */
+	public function valid_tags($str)
+	{
+		$tags = explode(',', $tags);
+
+		foreach($tags as $tag)
+		{
+			if( ! preg_match('(^[a-zA-Z0-9 ]{2,25}$)', $tag))
+			{
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
 }
-// END MY Form Validation Class
 /* End of file MY_Form_validation.php */
 /* Location: ./application/libraries/MY_Form_validation.php */

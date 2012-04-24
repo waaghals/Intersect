@@ -188,12 +188,10 @@ class Images_model extends CI_Model {
 		return FALSE;
 	}
 	
-	public function add_tag($img_id, $tag)
+	public function add_tag($img_id, $tag, $user_id)
 	{
-		if( ! is_int($img_id))
-		{
-			show_error('First agrument is not an int in add_tag');
-		}
+		$this->load->model('users_model', 'user');
+		$this->config->load('karma');
 		
 		//Leave only letter, numbers and spaces
 		$tag = trim(strtolower(preg_replace('[^\w\s]', ' ', $tag)));
@@ -205,7 +203,6 @@ class Images_model extends CI_Model {
 		{
 			$row = $query->row_array(); 
 			$tag_id = $row['id'];
-			 
 		}
 		else
 		{
@@ -217,15 +214,12 @@ class Images_model extends CI_Model {
 			$sql = 'INSERT INTO tag (tag) VALUES (?)';
 			$query = $this->db->query($sql, $tag);
 			$tag_id = $this->db->insert_id();
+			$this->user->add_karma($this->session->userdata('user_id'), $this->config->item('tag_create_karma'));
 		}
 		
-		$sql = 'INSERT INTO image_tag_map (image_id, tag_id) VALUES (?, ?)';
-		$this->db->query($sql, array($img_id, $tag_id));
+		$sql = 'INSERT IGNORE INTO image_tag_map (image_id, tag_id, user_id) VALUES (?, ?, ?)';
+		$this->db->query($sql, array($img_id, $tag_id, $user_id));
 		
-		$this->load->model('users_model', 'user');
-		$this->config->load('karma');
 		$this->user->add_karma($this->session->userdata('user_id'), $this->config->item('tag_karma'));
-		
 	}
-
 }

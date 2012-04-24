@@ -25,10 +25,10 @@ class View extends CI_Controller {
 		$data['path'] = path_to_image($id) . $id;
 		$data['id'] = $id;
 		
-		$this->load->view('include/header.php');
-		$this->load->view('include/nav.php');
-		$this->load->view('view/image.php', $data);
-		$this->load->view('include/footer.php');
+		$this->load->view('include/header');
+		$this->load->view('include/nav');
+		$this->load->view('view/image', $data);
+		$this->load->view('include/footer');
 	}
 
 	public function top($number = 500)
@@ -43,5 +43,12 @@ class View extends CI_Controller {
 		$this->load->view('include/nav');
 		$this->load->view('gallery', $data);
 		$this->load->view('include/footer');
+	}
+	
+	public function random()
+	{
+		$this->load->model('images_model', 'images');
+		$id = $this->images->random();
+		$this->image($id);
 	}
 }
