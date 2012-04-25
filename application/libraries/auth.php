@@ -15,12 +15,20 @@ class Auth {
 	{
 		if($user = $this->ci->users->get_user_by_name($username))
 		{
-			if(sha1($password) == $user['passhash'])
+			if($this->validate_pass($password, $user['passhash'], $user['salt']))
 			{
 				$this->ci->session->set_userdata(array('user_id' => $user['id'], 'username' => $user['name'], 'percentile' => $user['percentile']));
 				$this->ci->session->set_flashdata('success', 'Sign in successfull');
 				return TRUE;
 			}
+			else
+			{
+				show_error('Pass not valid');
+			}
+		}
+		else
+		{
+			show_error('There has been a db error, please wait 30 minutes and try again');
 		}
 		$this->ci->session->set_flashdata('error', 'Username or password incorrect.');
 		$this->ci->load->helper('url');
@@ -84,7 +92,7 @@ class Auth {
 
 	function create_user($username, $password)
 	{
-		$user_id = $this->ci->users->create_user($username, sha1($password));
+		$user_id = $this->ci->users->create_user($username, $password);
 		if( ! $user_id)
 		{
 			show_error('Could not create user, Database error');
@@ -100,7 +108,7 @@ class Auth {
 
 		if($user = $this->ci->users->get_user($user_id))
 		{
-			if(sha1($password) == $user->passhash)
+			if($this->validate_pass($password, $user['passhash'], $user['salt']))
 			{
 				$this->ci->users->change_password($user_id, $passhash);
 				return TRUE;
@@ -116,7 +124,7 @@ class Auth {
 
 		if($user = $this->ci->users->get_user($user_id))
 		{
-			if(sha1($password) == $user->passhash)
+			if($this->validate_pass($password, $user['passhash'], $user['salt']))
 			{
 				$this->ci->users->delete_user($user_id);
 				$this->sign_out();
@@ -125,6 +133,12 @@ class Auth {
 			show_error('Password is incorrect, account NOT deleted');
 		}
 		return FALSE;
+	}
+	
+	private function validate_pass($pass, $hash, $salt)
+	{
+		$generated_hash = hash("sha256", $salt . $pass);
+	    return $generated_hash === $hash;
 	}
 
 }

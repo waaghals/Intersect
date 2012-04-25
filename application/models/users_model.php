@@ -15,7 +15,8 @@ class Users_model extends CI_Model {
 					u.id,
 					name,
 					percentile,
-					LOWER(HEX(passhash)) AS passhash,
+					passhash,
+					salt,
 					title,
 					created,
 					karma,
@@ -64,10 +65,13 @@ class Users_model extends CI_Model {
 		return FALSE;
 	}
 
-	function create_user($username, $passhash)
+	function create_user($username, $password)
 	{
-		$this->db->set('passhash', 'UNHEX(\'' . $passhash . '\')', FALSE);
+		$a = $this->hashed($password);
+		
+		$this->db->set('passhash', $a['hash']);
 		$this->db->set('name', $username);
+		$this->db->set('salt', $a['salt']);
 		$this->db->set('created', date('Y-m-d H:i:s'));
 		if($this->db->insert('user'))
 		{
@@ -75,7 +79,7 @@ class Users_model extends CI_Model {
 			
 			$this->add_karma($user_id, 100);
 			$this->update_data_table();
-			
+
 			return $user_id;
 		}
 		return FALSE;
@@ -92,9 +96,12 @@ class Users_model extends CI_Model {
 		return FALSE;
 	}
 
-	function change_password($user_id, $passhash)
+	function change_password($user_id, $password)
 	{
-		$this->db->set('passhash', 'UNHEX(\'' . $passhash . '\')', FALSE);
+		$a = $this->hashed($password);
+		
+		$this->db->set('passhash', $a['hash']);
+		$this->db->set('salt', $a['salt']);
 		$this->db->where('id', $user_id);
 
 		$this->db->update('user');
@@ -231,7 +238,13 @@ MARKDOWN;
 		}
 		return FALSE;
 	}
-
+	
+	private function hashed($pass)
+	{
+	    $salt = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM)); //get 256 random bits in hex
+	    $hash = hash("sha256", $salt . $pass); 
+	    return array('hash' => $hash, 'salt' => $salt);
+	}
 }
 
 /* End of file users.php */
