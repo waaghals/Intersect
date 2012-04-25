@@ -20,6 +20,9 @@ class View extends CI_Controller {
 	public function image($id)
 	{
 		$this->load->model('tag_model', 'tags');
+		$this->load->model('images_model', 'images');
+		$this->config->load('points');
+		
 		$data['tags'] = $this->tags->for_image($id);
 		$this->load->helper('path');
 		$data['path'] = path_to_image($id) . $id;
@@ -29,6 +32,8 @@ class View extends CI_Controller {
 		$this->load->view('include/nav');
 		$this->load->view('view/image', $data);
 		$this->load->view('include/footer');
+		
+		$this->images->add_points($id, $this->config->item('view_points'));
 	}
 
 	public function top($number = 500)

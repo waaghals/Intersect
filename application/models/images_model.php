@@ -192,6 +192,7 @@ class Images_model extends CI_Model {
 	{
 		$this->load->model('users_model', 'user');
 		$this->config->load('karma');
+		$this->config->load('points');
 		
 		//Leave only letter, numbers and spaces
 		$tag = trim(strtolower(preg_replace('[^\w\s]', ' ', $tag)));
@@ -221,5 +222,23 @@ class Images_model extends CI_Model {
 		$this->db->query($sql, array($img_id, $tag_id, $user_id));
 		
 		$this->user->add_karma($this->session->userdata('user_id'), $this->config->item('tag_karma'));
+		
+		$this->config->load('points');
+		$this->add_points($img_id, $this->config->item('tag_points'));
+	}
+
+	public function add_points($img_id, $points)
+	{
+		$data = array(
+			'image_id' => $img_id,
+			'points' => $points,
+			'given' => date('Y-m-d')
+		);
+		
+		if($this->db->insert('image_point', $data))
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 }

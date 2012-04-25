@@ -205,6 +205,10 @@ MARKDOWN;
 	{
 		$sql = 'INSERT IGNORE INTO user_fav (user_id, image_id, added) VALUES (?, ?, ?)';
 		$this->db->query($sql, array($user_id, $img_id, date('Y-m-d H:i:s')));
+		
+		$this->load->model('images_model', 'images');
+		$this->config->load('points');
+		$this->images->add_points($img_id, $this->config->item('fav_points'));
 		if($this->db->affected_rows() > 0)
 		{
 			return TRUE;

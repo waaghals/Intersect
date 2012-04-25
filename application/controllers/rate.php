@@ -28,6 +28,7 @@ class Rate extends CI_Controller {
 		$this->load->model('users_model', 'users');
 		$this->load->model('rate_model', 'rate');
 		$this->config->load('karma');
+		$this->config->load('points');
 
 		$this->form_validation->set_rules('winner', 'Winner', 'required|numeric');
 		$this->form_validation->set_rules('loser', 'Loser', 'required|numeric');
@@ -63,6 +64,10 @@ class Rate extends CI_Controller {
 
 			//Add what the user rated to the database
 			$this->rate->add_user_rate($winner, $loser);
+			
+			//Give point to the image for the win/los
+			$this->images->add_points($winner, $this->config->item('win_points'));
+			$this->images->add_points($loser, $this->config->item('los_points'));
 
 			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('rate_karma'));
 

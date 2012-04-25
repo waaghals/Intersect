@@ -51,6 +51,9 @@ class Image extends CI_Controller {
 		$data['echo_this'] = ob_get_contents();
 		ob_end_clean();
 		$this->load->view('echo', $data);
+		
+		$this->config->load('points');
+		$this->images->add_points($img_id, $this->config->item('view_points'));
 	}
 
 	public function fav()
