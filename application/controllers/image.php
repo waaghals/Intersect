@@ -26,6 +26,9 @@ class Image extends CI_Controller {
 		$config['dynamic_output'] = TRUE;
 		$config['master_dim'] = 'auto';
 
+		$this->config->load('points');
+		$this->load->model('images_model', 'images');
+		$this->images->add_points($img_id, $this->config->item('view_points'));
 		//width and height need to be specified or the image gets skewed
 		if(is_numeric($width))
 		{
@@ -51,9 +54,6 @@ class Image extends CI_Controller {
 		$data['echo_this'] = ob_get_contents();
 		ob_end_clean();
 		$this->load->view('echo', $data);
-		
-		$this->config->load('points');
-		$this->images->add_points($img_id, $this->config->item('view_points'));
 	}
 
 	public function fav()
