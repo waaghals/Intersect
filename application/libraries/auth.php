@@ -19,6 +19,7 @@ class Auth {
 			{
 				$this->ci->session->set_userdata(array('user_id' => $user['id'], 'username' => $user['name'], 'percentile' => $user['percentile']));
 				$this->ci->session->set_flashdata('success', 'Sign in successfull');
+				$this->ci->session->sess_update(TRUE);
 				return TRUE;
 			}
 			else
