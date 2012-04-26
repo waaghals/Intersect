@@ -181,7 +181,7 @@ class User extends CI_Controller {
 		{
 			$data['rows'] = build_gallery($faves, 1170, 6);
 		}
-		$faves = $this->load->view('gallery', $data, TRUE);
+		$faves = $this->load->view('common/gallery', $data, TRUE);
 		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{userid}', '{karma}', '{rankth}', '{rank}', '{imgcount}', '{imgsize}', '{imgrating}', '{faves}');
 
 		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank'], $img['img_count'], byte_format($img['img_size']), round($img['rating']), $faves);
@@ -190,7 +190,7 @@ class User extends CI_Controller {
 
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
-		$this->load->view('echo', array('echo_this' => $html));
+		$this->load->view('common/echo', array('echo_this' => $html));
 		if($user_id == $user['id'])
 		{
 			$this->load->view('user/modify-profile-button');

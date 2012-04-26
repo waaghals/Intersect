@@ -46,7 +46,7 @@ class View extends CI_Controller {
 		
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
-		$this->load->view('gallery', $data);
+		$this->load->view('common/gallery', $data);
 		$this->load->view('include/footer');
 	}
 	
@@ -60,7 +60,7 @@ class View extends CI_Controller {
 		
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
-		$this->load->view('gallery', $data);
+		$this->load->view('common/gallery', $data);
 		$this->load->view('include/footer');
 	}
 	

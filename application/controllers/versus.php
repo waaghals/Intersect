@@ -35,7 +35,7 @@ class Versus extends CI_Controller {
 		
 		$this->load->view('include/header');
 		$this->load->view('include/nav');
-		$this->load->view('versus', $data);
+		$this->load->view('main/versus', $data);
 		$this->load->view('include/footer');
 		return;
 	}

@@ -3,7 +3,7 @@ if(is_array($rows)):
 	foreach($rows as $row):
 		?><div class="row"><?php
 	 	foreach($row as $image):
-			$this->load->view('resized_image', $image);
+			$this->load->view('common/gallery_image', $image);
 		endforeach;
 		?></div><?php
 	endforeach;

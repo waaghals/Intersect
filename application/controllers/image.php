@@ -53,7 +53,7 @@ class Image extends CI_Controller {
 		$this->image_lib->resize();
 		$data['echo_this'] = ob_get_contents();
 		ob_end_clean();
-		$this->load->view('echo', $data);
+		$this->load->view('common/echo', $data);
 	}
 
 	public function fav()

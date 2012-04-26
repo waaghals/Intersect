@@ -29,7 +29,7 @@ class Page extends CI_Controller {
 			$data['echo_this'] = $this->markdown->transform($page['markdown']);
 			$this->load->view('include/header', $page);
 			$this->load->view('include/nav');
-			$this->load->view('echo', $data);
+			$this->load->view('common/echo', $data);
 			if($this->auth->is_autoconfirmed())
 			{
 				$this->load->view('page/modify-page-button');
