@@ -8,12 +8,12 @@ class Images_model extends CI_Model {
 		$this->load->helper('path', 'url');
 	}
 
-	public function best($number)
+	public function top($number)
 	{
 		return $this->images($number, FALSE);
 	}
 
-	public function worst($numer)
+	public function flop($number)
 	{
 		return $this->images($number, TRUE);
 	}

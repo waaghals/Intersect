@@ -19,10 +19,7 @@
                 <a href="/upload">Upload</a>
               </li>
               <li class="">
-                <a href="/view/top/100">Top 100</a>
-              </li>
-              <li class="">
-                <a href="/view/trending">Trending</a>
+                <a href="/view/gallery">Gallery</a>
               </li>
               <?php if($this->auth->is_autoconfirmed()): ?>
               <li class="">

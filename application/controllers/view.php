@@ -35,33 +35,57 @@ class View extends CI_Controller {
 		
 		$this->images->add_points($id, $this->config->item('view_points'));
 	}
-
-	public function top($number = 500)
+	
+	public function gallery($type = 'all', $number = 100)
 	{
-		$this->load->model('images_model', 'images');
-		$this->load->helper('image_justifaction_helper');
+		$this->_gallery($type, FALSE, $number);
+	}
 
-		$rows = build_gallery($this->images->best($number), 1170);
-		$data['rows'] = $rows;
-		
-		$this->load->view('include/header');
-		$this->load->view('include/nav');
-		$this->load->view('common/gallery', $data);
-		$this->load->view('include/footer');
+	public function top($number = 100)
+	{
+		$this->_gallery('top', FALSE, $number);
+	}
+	
+	public function flop($number = 100)
+	{
+		$this->_gallery('flop', FALSE, $number);
 	}
 	
 	public function trending()
 	{
-		$this->load->model('images_model', 'images');
-		$this->load->helper('image_justifaction_helper');
-
-		$rows = build_gallery($this->images->trending(), 1170);
-		$data['rows'] = $rows;
+		$this->_gallery('trending', FALSE);
+	}
+	
+	private function _gallery($what = 'all', $include = FALSE, $number = 100)
+	{
+		if( ! $include)
+		{
+			$this->load->view('include/header');
+			$this->load->view('include/nav');
+		}
 		
-		$this->load->view('include/header');
-		$this->load->view('include/nav');
-		$this->load->view('common/gallery', $data);
-		$this->load->view('include/footer');
+		if($what == 'all')
+		{
+			$this->_gallery('trending', TRUE, $number);
+			$this->_gallery('top', TRUE, $number);
+			$this->_gallery('flop', TRUE, $number);
+		}
+		else
+		{
+			$this->load->model('images_model', 'images');
+			$this->load->helper('image_justifaction_helper');
+	
+			$rows = build_gallery($this->images->$what($number), 1170);
+			$data['rows'] = $rows;
+			$data['heading'] = ucfirst($what);
+			
+			$this->load->view('common/gallery', $data);
+		}
+		
+		if( ! $include)
+		{
+			$this->load->view('include/footer');
+		}
 	}
 	
 	public function random()

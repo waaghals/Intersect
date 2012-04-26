@@ -1,4 +1,6 @@
-<?php
+<div class="page-header">
+  <h1><?php echo $heading; ?></h1>
+</div><?php
 if(is_array($rows)):
 	foreach($rows as $row):
 		?><div class="row"><?php
