@@ -276,7 +276,7 @@ class User extends CI_Controller {
 				//Update the user profile
 				$this->user->change_profile($user_id, $this->input->post('markdown'));
 				$this->session->set_flashdata('success', 'Profile updated');
-				redirect('/user/profile');
+				redirect('/user/profile/' . $this->session->userdata('username'));
 			}
 			$this->session->set_flashdata('warning', 'Your profile can\'t be empty');
 			redirect('/user/modify');
