@@ -181,6 +181,7 @@ class User extends CI_Controller {
 		{
 			$data['rows'] = build_gallery($faves, 1170, 6);
 		}
+		$data['heading'] = 'Faves';
 		$faves = $this->load->view('common/gallery', $data, TRUE);
 		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{userid}', '{karma}', '{rankth}', '{rank}', '{imgcount}', '{imgsize}', '{imgrating}', '{faves}');
 
