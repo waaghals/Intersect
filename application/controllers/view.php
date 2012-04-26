@@ -50,6 +50,20 @@ class View extends CI_Controller {
 		$this->load->view('include/footer');
 	}
 	
+	public function trending()
+	{
+		$this->load->model('images_model', 'images');
+		$this->load->helper('image_justifaction_helper');
+
+		$rows = build_gallery($this->images->trending(), 1170);
+		$data['rows'] = $rows;
+		
+		$this->load->view('include/header');
+		$this->load->view('include/nav');
+		$this->load->view('gallery', $data);
+		$this->load->view('include/footer');
+	}
+	
 	public function random()
 	{
 		$this->load->model('images_model', 'images');

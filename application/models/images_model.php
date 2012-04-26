@@ -50,6 +50,45 @@ class Images_model extends CI_Model {
 		}
 		return FALSE;
 	}
+	
+	public function trending()
+	{
+		$sql = "SELECT 
+					a * LOG10(ABS(b)) as metric, 
+					d.image_id as id,
+					d.width AS width,
+					d.height AS height,
+					ROUND(250 / d.height * d.width) AS twidth,
+					250 AS theight,
+					NULL AS vwidth
+				FROM (
+					select 
+						((count(image_id) * sum(x*y)) - (sum(x)*sum(y)))/
+							((count(image_id) * sum(Power(x,2)))-Power(Sum(x),2)) AS `a`, 
+						avg(y) - ((count(*) * sum(x*y)) - (sum(x)*sum(y)))/
+							((count(image_id) * sum(Power(x,2)))-Power(Sum(x),2)) * avg(x) as `b`,
+						image_id
+					FROM (
+						SELECT 
+							image_id, 
+							31-DATEDIFF( CURDATE(), given ) x, 
+							sum( points ) y
+						FROM `image_point` 
+						GROUP BY image_id, given
+						HAVING x <= 31) t 
+					GROUP BY image_id) t2
+				JOIN image_data d
+					ON d.image_id = t2.image_id
+				ORDER BY metric DESC
+				LIMIT 50";
+
+		$q = $this->db->query($sql);
+		if($q->num_rows() > 0)
+		{
+			return $q->result_array();
+		}
+		return FALSE;
+	}
 
 	public function update_quantiles()
 	{

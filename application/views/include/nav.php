@@ -21,6 +21,9 @@
               <li class="">
                 <a href="/view/top/100">Top 100</a>
               </li>
+              <li class="">
+                <a href="/view/trending">Trending</a>
+              </li>
               <?php if($this->auth->is_autoconfirmed()): ?>
               <li class="">
                 <a href="/user/invite">Invite Others</a>
