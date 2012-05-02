@@ -16,22 +16,25 @@
                 <a href="/">Rate</a>
               </li>
               <li class="">
+                <a href="/view/random">Random</a>
+              </li>
+              <li class="">
                 <a href="/upload">Upload</a>
               </li>
               <li class="">
                 <a href="/view/gallery">Gallery</a>
               </li>
-              <?php if($this->auth->is_autoconfirmed()): ?>
-              <li class="">
-                <a href="/user/invite">Invite Others</a>
-              </li>
-              <?php endif; ?>
               <li class="">
                 <a href="/user/table">Users</a>
               </li>
              <?php endif; ?>
             </ul>
             <ul class="nav pull-right">
+              <?php if($this->auth->is_autoconfirmed()): ?>
+              <li class="">
+                <a href="/user/invite">Invite Others</a>
+              </li>
+              <?php endif; ?>
               <?php if($this->auth->is_logged_in()): ?>
               <li class="">
                 <a href="/user/modify">Edit Profile</a>
