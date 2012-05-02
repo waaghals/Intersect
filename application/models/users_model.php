@@ -49,9 +49,8 @@ class Users_model extends CI_Model {
 	{
 		$sql = "SELECT 
 					COUNT(id.image_id) AS img_count,
-					SUM(id.size)*1024 AS img_size,
-					AVG(rating) AS rating
-					FROM image_data AS id
+					SUM(id.size)*1024 AS img_size
+				FROM image_data AS id
 					JOIN image AS i
 						ON(i.id = id.image_id)
 					JOIN user_image AS ui

@@ -38,8 +38,8 @@ class Rate extends CI_Controller {
 			$winner = $this->input->post('winner');
 			$loser = $this->input->post('loser');
 
-			$winner_rating = $this->images->get_rating($winner);
-			$loser_rating = $this->images->get_rating($loser);
+			$winner_rating = $this->rate->get_rating($winner);
+			$loser_rating = $this->rate->get_rating($loser);
 
 			if( ! $winner_rating || ! $loser_rating)
 			{
@@ -55,8 +55,8 @@ class Rate extends CI_Controller {
 			$this->db->trans_start();
 
 			//Change the images ratings
-			$this->rate->update_winner($winner);
-			$this->rate->update_loser($winner);
+			$this->rate->add_rating($winner, $this->elo->get_winner_rating());
+			$this->rate->add_rating($loser, $this->elo->get_loser_rating());
 
 			//Remove images from the queue
 			$this->queue->modify($winner, 'C');
@@ -66,9 +66,12 @@ class Rate extends CI_Controller {
 			$this->rate->add_user_rate($winner, $loser);
 			
 			//Give point to the image for the win/los
+			$this->images->add_points($winner, $this->elo->get_winner_rating());
+			$this->images->add_points($loser, $this->elo->get_loser_rating());
 			$this->images->add_points($winner, $this->config->item('win_points'));
 			$this->images->add_points($loser, $this->config->item('los_points'));
 
+			//Give the user karma
 			$this->users->add_karma($this->session->userdata('user_id'), $this->config->item('rate_karma'));
 
 			$this->db->trans_complete();

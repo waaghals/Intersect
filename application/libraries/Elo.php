@@ -70,7 +70,7 @@ class Elo {
 		$this->expectedA = $expected_scores['a'];
 		$this->expectedB = $expected_scores['b'];
 
-		$new_ratings = $this->get_new_ratings($this->ratingA, $this->ratingB, $this->expectedA, $this->expectedB, $this->scoreA, $this->scoreB);
+		$new_ratings = $this->get_new_ratings($this->expectedA, $this->expectedB, $this->scoreA, $this->scoreB);
 		$this->newRatingA = $new_ratings['a'];
 		$this->newRatingB = $new_ratings['b'];
 	}
@@ -83,10 +83,10 @@ class Elo {
 		return array('a' => $expectedScoreA, 'b' => $expectedScoreB);
 	}
 
-	protected function get_new_ratings($ratingA, $ratingB, $expectedA, $expectedB, $scoreA, $scoreB)
+	protected function get_new_ratings($expectedA, $expectedB, $scoreA, $scoreB)
 	{
-		$newRatingA = $ratingA + (self::KFACTOR * ($scoreA - $expectedA));
-		$newRatingB = $ratingB + (self::KFACTOR * ($scoreB - $expectedB));
+		$newRatingA = self::KFACTOR * ($scoreA - $expectedA);
+		$newRatingB = self::KFACTOR * ($scoreB - $expectedB);
 
 		return array('a' => $newRatingA, 'b' => $newRatingB);
 	}

@@ -183,9 +183,9 @@ class User extends CI_Controller {
 		}
 		$data['heading'] = 'Faves';
 		$faves = $this->load->view('common/gallery', $data, TRUE);
-		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{userid}', '{karma}', '{rankth}', '{rank}', '{imgcount}', '{imgsize}', '{imgrating}', '{faves}');
+		$vars = array('{username}', '{title}', '{timeframe}', '{since}', '{userid}', '{karma}', '{rankth}', '{rank}', '{imgcount}', '{imgsize}', '{faves}');
 
-		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank'], $img['img_count'], byte_format($img['img_size']), round($img['rating']), $faves);
+		$values = array(ucfirst($user['name']), $user['title'], timeframe($user['created']), $user['created'], $user['id'], $user['karma'], ordinal_suffix($user['rank']), $user['rank'], $img['img_count'], byte_format($img['img_size']), $faves);
 
 		$html = str_replace($vars, $values, $html);
 
